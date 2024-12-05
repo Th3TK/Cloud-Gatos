@@ -1,0 +1,39 @@
+* {
+    font-family: Tahoma;
+}
+
+body, main {
+    margin: 0;
+    overflow: hidden;
+}
+
+#player {
+    position: absolute;
+    top: 50%;  
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 100px;
+    height: 100px;
+    background-color: red;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.cloud {
+    position: absolute;
+
+    width: 200px;
+    height: 50px;
+    background-color: gray;
+
+    border: lightgray 5px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
