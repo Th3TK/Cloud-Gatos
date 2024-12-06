@@ -1,15 +1,21 @@
-import { HORIZONTAL_VELOCITY, UPDATES_PER_SECOND, VERTICAL_VELOCITY } from "../config.js";
+import { HORIZONTAL_VELOCITY, UPDATES_PER_SECOND, VERTICAL_VELOCITY } from "../config";
+import { Pressed } from "../types/common.types";
+import { Game } from "./Game";
 
-const KEYS_MAPPED = {
-    87: 'up',
-    83: 'down',
-    65: 'left',
-    68: 'right',
+const KEYS_MAPPED : {[x: string]: string} = {
+    'w': 'up',
+    's': 'down',
+    'a': 'left',
+    'd': 'right',
 }
 
 export default class MovementHandler {
-    constructor(board) {
-        this.board = board;
+    game: Game;
+    pressed: Pressed;
+    updateInterval: number;
+
+    constructor(game: Game) {
+        this.game = game;
         this.pressed = {
             up: false,
             down: false,
@@ -23,16 +29,16 @@ export default class MovementHandler {
         this.calculateDistanceToAdd = this.calculateDistanceToAdd.bind(this);
     }
 
-    handleButtonDown(event) {
-        const key = event.keyCode;
+    handleButtonDown(event: KeyboardEvent) {
+        const key: string = event.key.toLowerCase();
         event.preventDefault();
 
         if (!(key in KEYS_MAPPED)) return;
         this.pressed[KEYS_MAPPED[key]] = true;
     }
 
-    handleButtonUp(event) {
-        const key = event.keyCode;
+    handleButtonUp(event: KeyboardEvent) {
+        const key = event.key;
         event.preventDefault();
 
         if (!(key in KEYS_MAPPED)) return;
@@ -40,8 +46,8 @@ export default class MovementHandler {
     }
 
     updateMovement() {
-        const {x, y} = this.calculateDistanceToAdd();
-        this.board.updatePositions(x, y);
+        const pos = this.calculateDistanceToAdd();
+        this.game.updatePositions(pos);
     }
 
     calculateDistanceToAdd() {
@@ -56,7 +62,7 @@ export default class MovementHandler {
         document.addEventListener('keyup', this.handleButtonUp);
 
         this.updateInterval = setInterval(this.updateMovement, 1000 / UPDATES_PER_SECOND);
-        this.board.updatePositions(1, 1);
+        this.game.updatePositions({x: 1, y: 1});
     }
 
     destroy() {

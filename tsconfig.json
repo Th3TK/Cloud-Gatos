@@ -1,0 +1,17 @@
+{
+  
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "strictPropertyInitialization": false,
+    "lib": ["es2017", "dom"],
+    "outDir": "./dist",          // All compiled files go here
+    "rootDir": "./src",          // Keeps source files organized
+    "target": "ES6",             // Compatible with modern browsers
+    "module": "ES6",             // Use ES6 modules
+    "strict": true,              // Enable strict type-checking
+    "esModuleInterop": true      // Ensure compatibility with CommonJS modules
+  },
+  "include": ["src/**/*.ts"],    // Only compile files in the `src` folder
+  "exclude": ["node_modules"]    // Ignore dependencies
+}
