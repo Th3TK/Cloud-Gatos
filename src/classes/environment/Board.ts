@@ -2,8 +2,7 @@ import SimplexNoise from 'simplex-noise';
 import { CHANCE_FOR_CLOUD, CLOUD_WIDTH, MAX_HEIGHT_CLOUDS, MIN_HEIGHT_CLOUDS, TILES_TO_NEW_GATO_HORIZONTAL, TILES_TO_NEW_GATO_VERTICAL } from "../../config";
 import { Coordinates, Obstacles } from "../../types/common.types";
 import { filterObject, signDependantFloor } from "../../utils/misc";
-import { getPos, randomCoords } from "../../utils/positioning.js";
-import { seededPositionVal } from "../../utils/seeds";
+import { randomCoords } from "../../utils/positioning.js";
 import Cloud from "./Cloud";
 
 export default class Board {
@@ -27,7 +26,7 @@ export default class Board {
 
     private setDimensions() {
         this.gridSize = CLOUD_WIDTH;
-        this.viewRadius = Math.ceil(window.innerWidth / CLOUD_WIDTH);
+        this.viewRadius = Math.ceil(window.innerWidth / CLOUD_WIDTH / 2) + 1;
     }
 
     public getObstacles = () => this.obstacles;

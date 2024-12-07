@@ -24,3 +24,15 @@ export const randomCoords = (center: Coordinates, horizontal: MinMax, vertical: 
         y: y,
     }
 }
+
+export function isElementVisible(element: HTMLElement | null | undefined): boolean {
+    if(!element) return false;
+    const rect = element.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}

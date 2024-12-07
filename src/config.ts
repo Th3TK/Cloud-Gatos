@@ -26,3 +26,5 @@ export const GATO_ACCELERATION = 0.5;
 export const GATO_MAX_SPEED = 10;
 
 export const PICK_UP_COOLDOWN = 1000;
+
+export const getPointerRadius = () => window.innerHeight / 2 - 250; 

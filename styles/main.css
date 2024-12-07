@@ -1,5 +1,6 @@
 * {
     font-family: Tahoma;
+    image-rendering: pixelated;
 }
 
 body, main {
@@ -26,6 +27,19 @@ body, main {
     justify-content: center;
     align-items: center;
     color: white;
+}
+
+#pointer {
+    position: absolute;
+
+    width: 85px;
+    height: 85px;
+
+    opacity: 0;
+    
+    background-image: url('/assets/arrow.png');
+    background-size: contain;
+    transition: opacity 0.25s ease-in-out;
 }
 
 .cloud {

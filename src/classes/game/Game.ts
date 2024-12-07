@@ -2,17 +2,27 @@ import Board from "../environment/Board.js";
 import Player from "./Player.js";
 import Gato from "./Gato.js";
 import { Coordinates, Movement } from "../../types/common.types.js";
+import Pointer from "./Pointer.js";
+import { isElementVisible } from "../../utils/positioning.js";
 
 export class Game {
     private element: HTMLElement;
     private player: Player;
     private board: Board;
     private gato: Gato | null = null;
+    private pointer : Pointer;
 
-    constructor(gameElement: HTMLElement, playerElement: HTMLElement, obstacleContainer: HTMLElement, seed: number) {
+    constructor(
+        gameElement: HTMLElement, 
+        playerElement: HTMLElement, 
+        obstacleContainer: HTMLElement, 
+        pointerElement: HTMLElement, 
+        seed: number
+    ) {
         this.element = gameElement;
         this.player = new Player(playerElement);
         this.board = new Board(seed, obstacleContainer, this.player.getCoords);
+        this.pointer = new Pointer(pointerElement);
         this.player.addCollisionHandler(this.board);
 
         this.playerRelease = this.playerRelease.bind(this);
@@ -28,6 +38,8 @@ export class Game {
         
         this.gato = new Gato(coordinates, this.board);
         this.gato.createGato(this.element);
+
+        this.pointer.pointAt(this.gato);
     }
 
     public checkForGatoPickUps(){
@@ -43,11 +55,20 @@ export class Game {
     public updatePositions(movement: Movement) {
         if(movement.x || movement.y) this.player.move(movement);
         
-        if(this.gato && this.board.isObjectInRenderedTiles(this.player.getCoords(), this.gato?.getCoords())) {
+        const playerCoords = this.player.getCoords();
+        const playerSizes = this.player.getSizes(); 
+        
+        if(this.gato && this.board.isObjectInRenderedTiles(playerCoords, this.gato?.getCoords())) {
             this.checkForGatoPickUps();
-            this.gato?.updatePosition(this.player.getCoords());
+            this.gato?.updatePosition(playerCoords);
         }
         
         this.board.updateBoard();
+        
+        if(!isElementVisible(this.pointer.getTarget()?.element)) {
+            this.pointer.show();
+        }
+        else this.pointer.hide();
+        this.pointer.updatePointing(playerCoords, playerSizes);
     }
 }
