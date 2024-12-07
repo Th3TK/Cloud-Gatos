@@ -8,6 +8,15 @@ body, main {
     overflow: hidden;
 }
 
+#pointsCounter {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 3rem;
+
+    z-index: 100;
+}
+
 #obstacleContainer {
     position: absolute;
 }
@@ -40,6 +49,8 @@ body, main {
     background-image: url('/assets/arrow.png');
     background-size: contain;
     transition: opacity 0.25s ease-in-out;
+
+    z-index: 100;
 }
 
 .cloud {
@@ -48,12 +59,24 @@ body, main {
     width: 200px;
     height: 50px;
     background-color: gray;
-
-    border: lightgray 5px solid;
+    box-sizing: border-box;
+    border: darkgray 5px solid;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
+}
+
+.cloud.small {
+    height: 50px;
+}
+
+.cloud.medium {
+    height: 75px;
+}
+
+.cloud.large {
+    height: 90apx;
 }
 
 .gato {
@@ -62,5 +85,14 @@ body, main {
     width: 25px;
     height: 25px;
     background-color: black;
-    z-index: 100;
+    z-index: 50;
+}
+
+.box {
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+    background-color: #9c00e4;
+    z-index: 50;
 }

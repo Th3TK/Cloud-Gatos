@@ -1,4 +1,4 @@
-import { Coordinates, Sizes } from "../../types/common.types";
+import { Coordinates, Movement, Sizes } from "../../types/common.types";
 import { getPos } from "../../utils/positioning";
 import Board from "../environment/Board";
 import CollisionHandler from "./CollisionHandler";
@@ -28,5 +28,13 @@ export default class Entity {
 
         this.element.style.left = `${position.x}px`;
         this.element.style.top = `${position.y}px`;
+    }
+
+    public move(movement: Movement) {
+        let handledMovement = movement;
+        if(this.element && this.collisionHandler) handledMovement = this.collisionHandler?.handleCollisions(this.element, movement) ?? handledMovement;
+
+        this.coordinates.x += handledMovement.x;
+        this.coordinates.y += handledMovement.y;
     }
 }

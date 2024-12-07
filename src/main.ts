@@ -5,15 +5,17 @@ import KeyboardHandler from "./classes/game/KeyboardHandler.js";
 
 const playerElement = document.querySelector('#player');
 const pointerElement = document.querySelector('#pointer');
+const pointsCounter = document.querySelector('#pointsCounter');
 const obstacleContainer = document.querySelector('#obstacleContainer');
 const gameElement = document.body;
 
 if (!(playerElement instanceof HTMLElement)) throw 'No HTMLElement of id = #player';
+if (!(pointsCounter instanceof HTMLElement)) throw 'No HTMLElement of id = #pointCounter';
 if (!(pointerElement instanceof HTMLElement)) throw 'No HTMLElement of id = #pointer';
 if (!(obstacleContainer instanceof HTMLElement)) throw 'No HTMLElement of id = #obstacleContainer';
 
 const seed = getSeed();
-const game = new Game(gameElement, playerElement, obstacleContainer, pointerElement, seed);
+const game = new Game(gameElement, playerElement, obstacleContainer, pointerElement, pointsCounter, seed);;
 const movementHandler = new MovementHandler(game); 
 const keyboardHandler = new KeyboardHandler();
 

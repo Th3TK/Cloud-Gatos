@@ -1,5 +1,7 @@
 import Cloud from "../classes/environment/Cloud";
 
+export type CloudSizes = 1 | 2 | 3;
+
 export interface Coordinates {
     x: number;
     y: number;

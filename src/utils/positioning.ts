@@ -16,6 +16,8 @@ export const randomCoords = (center: Coordinates, horizontal: MinMax, vertical: 
     let x = center.x + randomSign(randomNumber(horizontal.min, horizontal.max));
     let y = center.y + randomSign(randomNumber(vertical.min, vertical.max));
 
+    console.log(x, y)
+
     if(y < -MAX_HEIGHT_CLOUDS) y = -MAX_HEIGHT_CLOUDS;
     if(y > -MIN_HEIGHT_CLOUDS) y = -MIN_HEIGHT_CLOUDS;
 
@@ -36,3 +38,9 @@ export function isElementVisible(element: HTMLElement | null | undefined): boole
         rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
 }
+
+export const coordinatesEqual = (coords1: Coordinates, coords2: Coordinates) => 
+    coords1.x === coords2.x && coords1.y === coords2.y;
+
+export const coordinatesAlmostEqual = (coords1: Coordinates, coords2: Coordinates, marginX: number, marginY: number) =>
+    Math.abs(coords1.x - coords2.x) < marginX && Math.abs(coords1.y - coords2.y) < marginY;

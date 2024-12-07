@@ -7,11 +7,7 @@ export default class Player extends Carrier {
     }
 
     move(movement: Movement) {
-        let handledMovement = movement;
-        if(this.element) handledMovement = this.collisionHandler?.handleCollisions(this.element, movement) ?? handledMovement;
-
-        this.coordinates.x += handledMovement.x;
-        this.coordinates.y += handledMovement.y;
+        super.move(movement);
 
         if(this.element) this.element.innerText = `${this.coordinates.x} ${this.coordinates.y}`;
     }

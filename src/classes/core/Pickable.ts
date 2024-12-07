@@ -1,12 +1,13 @@
 import { Coordinates } from "../../types/common.types";
 import { doRectanglesOverlap } from "../../utils/misc";
-import { getPos } from "../../utils/positioning";
 import Carrier from "./Carrier";
 import Fallable from "./Fallable";
 
 export default class Pickable extends Fallable {
     private picked: boolean = false;
     private carrier: Carrier | null = null;
+
+    public isPicked = () => this.picked;
 
     public pickUp(carrier: Carrier) {
         this.picked = true;
@@ -23,6 +24,7 @@ export default class Pickable extends Fallable {
 
         if (this.picked && this.carrier) {
             this.coordinates = structuredClone(this.carrier.getCoords());
+            this.coordinates.y += this.carrier.getSizes().height / 2 - this.getSizes().height / 2;
         }
 
         if(!this.picked) this.calculateFalling();
