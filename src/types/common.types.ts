@@ -1,4 +1,4 @@
-import Cloud from "../classes/Cloud";
+import Cloud from "../classes/environment/Cloud";
 
 export interface Coordinates {
     x: number;

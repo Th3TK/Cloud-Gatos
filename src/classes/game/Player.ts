@@ -1,7 +1,7 @@
-import { Coordinates, Movement } from "../types/common.types";
-import Entity from "./Entity";
+import { Coordinates, Movement } from "../../types/common.types";
+import Carrier from "../core/Carrier";
 
-export default class Player extends Entity {
+export default class Player extends Carrier {
     constructor(element: HTMLElement, coordinates: Coordinates = {x: 0, y: 0}) {
         super(element, coordinates);
     }

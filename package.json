@@ -2,10 +2,13 @@
   "scripts": {
     "dev": "vite --port 3000",
     "build": "vite build",
-    "preview": "vite preview" 
+    "preview": "vite preview"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
     "vite": "^6.0.3"
+  },
+  "dependencies": {
+    "simplex-noise": "^3.0.1"
   }
 }

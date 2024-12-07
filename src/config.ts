@@ -1,8 +1,9 @@
 import { MinMax } from "./types/common.types";
 
-export const HORIZONTAL_VELOCITY = 3;
-export const VERTICAL_VELOCITY = 3;
-export const UPDATES_PER_SECOND = 144;
+export const PLAYER_ACCELERATION = 1;
+export const PLAYER_MAX_HORIZONTAL_VELOCITY = 8;
+export const PLAYER_MAX_VERTICAL_VELOCITY = 8;
+export const UPDATES_PER_SECOND = 60;
 
 export const PLAYER_WIDTH = 100;
 export const CLOUD_WIDTH = 200;
@@ -21,5 +22,7 @@ export const TILES_TO_NEW_GATO_VERTICAL: MinMax = {
     max: 2,
 }
 
-export const GATO_ACCELERATION = 0.25;
-export const GATO_MAX_SPEED = 5;
+export const GATO_ACCELERATION = 0.5;
+export const GATO_MAX_SPEED = 10;
+
+export const PICK_UP_COOLDOWN = 1000;

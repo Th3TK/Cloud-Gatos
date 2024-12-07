@@ -7,6 +7,10 @@ body, main {
     overflow: hidden;
 }
 
+#obstacleContainer {
+    position: absolute;
+}
+
 #player {
     position: absolute;
     top: 50%;  

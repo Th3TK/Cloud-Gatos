@@ -1,5 +1,5 @@
-import { Coordinates } from "../types/common.types";
-import { getPos } from "../utils/positioning";
+import { Coordinates } from "../../types/common.types";
+import { getPos } from "../../utils/positioning";
 
 export default class Cloud {
     element: HTMLElement;
@@ -24,6 +24,7 @@ export default class Cloud {
         let element = document.createElement('div');
         element.classList.add('cloud');
         element.innerHTML = `${this.tileCoordinates.x} ${this.tileCoordinates.y}`
+
         this.container.appendChild(element);
         return element;
     }

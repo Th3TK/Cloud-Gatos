@@ -16,3 +16,7 @@ export const doRectanglesOverlap = (coords1: Coordinates, sizes1: Sizes, coords2
 export const randomNumber = (min: number, max: number) : number => Math.floor(Math.random() * (max - min)) + min;
 
 export const randomSign = (num: number) => Math.random() < 0.5 ? num : -num;
+
+export const clamp = (n: number, max: number, min: number) => Math.max(Math.min(n, Math.max(max, min)), Math.min(max, min));
+
+export const clampEqual = (n: number, range: number) => clamp(n, range, -range);

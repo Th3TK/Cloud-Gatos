@@ -1,40 +1,56 @@
-import { CHANCE_FOR_CLOUD, CLOUD_WIDTH, MAX_HEIGHT_CLOUDS, MIN_HEIGHT_CLOUDS, TILES_TO_NEW_GATO_HORIZONTAL, TILES_TO_NEW_GATO_VERTICAL } from "../config.ts";
-import { Coordinates, Obstacles } from "../types/common.types.ts";
-import { filterObject, signDependantFloor } from "../utils/misc.ts";
-import { randomCoords } from "../utils/positioning.js";
-import { seededPositionVal } from "../utils/seeds.ts";
-import Cloud from "./Cloud.ts";
+import SimplexNoise from 'simplex-noise';
+import { CHANCE_FOR_CLOUD, CLOUD_WIDTH, MAX_HEIGHT_CLOUDS, MIN_HEIGHT_CLOUDS, TILES_TO_NEW_GATO_HORIZONTAL, TILES_TO_NEW_GATO_VERTICAL } from "../../config";
+import { Coordinates, Obstacles } from "../../types/common.types";
+import { filterObject, signDependantFloor } from "../../utils/misc";
+import { getPos, randomCoords } from "../../utils/positioning.js";
+import { seededPositionVal } from "../../utils/seeds";
+import Cloud from "./Cloud";
 
 export default class Board {
-    private seed: number;
+    private noise: SimplexNoise;
     private gridSize: number;
     private viewRadius: number;
     private obstacles: Obstacles;
+    private container: HTMLElement;
+    private lastUpdateTileCoords: Coordinates;
     private getPlayerCoords: () => Coordinates;
 
-    constructor(seed: number, getPlayerCoords: () => Coordinates) {
-        this.seed = seed;
+    constructor(seed: number, container: HTMLElement, getPlayerCoords: () => Coordinates) {
+        this.noise = new SimplexNoise(seed);
         this.obstacles = {};
+        this.container = container
         this.getPlayerCoords = getPlayerCoords;
         this.setDimensions();
 
         this.getTileCoords = this.getTileCoords.bind(this);
     }
 
-    public getObstacles = () => this.obstacles;
-
     private setDimensions() {
         this.gridSize = CLOUD_WIDTH;
         this.viewRadius = Math.ceil(window.innerWidth / CLOUD_WIDTH);
     }
 
-    public isObstacle(tileCoordinates: Coordinates) {
+    public getObstacles = () => this.obstacles;
+
+    public isObjectInRenderedTiles = (playerCoords : Coordinates, objectCoords: Coordinates) => {
+        const centerTile = this.getTileCoords(playerCoords);
+        const objectTile = this.getTileCoords(objectCoords);
         return (
-            tileCoordinates.y >= -MAX_HEIGHT_CLOUDS &&
-            tileCoordinates.y <= -MIN_HEIGHT_CLOUDS &&            
-            seededPositionVal(this.seed, tileCoordinates.x, tileCoordinates.y) > (1 - CHANCE_FOR_CLOUD) &&
-            tileCoordinates.x !== 0 &&
-            tileCoordinates.y !== 0
+            objectTile.x <= centerTile.x + this.viewRadius &&
+            objectTile.x >= centerTile.x - this.viewRadius &&
+            objectTile.y <= centerTile.y + this.viewRadius &&
+            objectTile.y >= centerTile.y - this.viewRadius
+        );
+    }
+
+    public isObstacle({x, y}: Coordinates) {
+        
+        return (
+            y >= -MAX_HEIGHT_CLOUDS &&
+            y <= -MIN_HEIGHT_CLOUDS &&            
+            x !== 0 &&
+            y !== 0 &&
+            this.noise.noise2D(x, y) > (1 - CHANCE_FOR_CLOUD)
         );
     }
 
@@ -45,7 +61,7 @@ export default class Board {
         if (id in this.obstacles) return this.obstacles[id];
 
         if (!this.isObstacle(tileCoordinates)) return null;
-        this.obstacles[id] = new Cloud(tileCoordinates, document.querySelector('#obstacleContainer') ?? document.body);
+        this.obstacles[id] = new Cloud(tileCoordinates, this.container);
     }
 
     generateObstacles(currentTile: Coordinates) {
@@ -87,7 +103,6 @@ export default class Board {
 
         let [x, y, dx, dy] = [0, 0, 0, -1];
 
-        console.log(tileCoordinates, this.isObstacle(tileCoordinates));
         while(!this.isObstacle(tileCoordinates)) {
             if( (x == y) || (x < 0 && x == -y) || (x > 0 && x == 1 - y)) {
                 [dx, dy] = [-dy, dx];
@@ -96,7 +111,6 @@ export default class Board {
             y += dy;
             tileCoordinates.x += dx;
             tileCoordinates.y += dy;
-            console.log(tileCoordinates, this.isObstacle(tileCoordinates));
         }
 
         tileCoordinates.y--;
@@ -106,13 +120,11 @@ export default class Board {
 
     updateObstaclesPositions() {
         for (const obstacle of Object.values(this.obstacles)) {
-            console.log()
             obstacle.updatePosition(this.getCoordsFromTile(obstacle.tileCoordinates), this.getPlayerCoords());
         }
     }
 
     public getTileCoords(coordinates: Coordinates) {
-        console.log(coordinates, this.gridSize)
         return {
             x: signDependantFloor(coordinates.x / this.gridSize),
             y: signDependantFloor(coordinates.y / this.gridSize),
@@ -128,11 +140,16 @@ export default class Board {
 
     getCurrentTileCoords = () => this.getTileCoords(this.getPlayerCoords());
 
-    updateBoard(coordinates: Coordinates) {
+    updateBoard() {
         const currentTile = this.getCurrentTileCoords();
 
-        this.generateObstacles(currentTile);
-        this.pruneOffViewObstacles(currentTile);
+        if(!this.lastUpdateTileCoords || this.lastUpdateTileCoords.x !== currentTile.x || this.lastUpdateTileCoords.y !== currentTile.y) {
+            this.generateObstacles(currentTile);
+            this.pruneOffViewObstacles(currentTile);
+
+        }
         this.updateObstaclesPositions();
+
+        this.lastUpdateTileCoords = currentTile;
     }
 }

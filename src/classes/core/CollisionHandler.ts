@@ -1,4 +1,4 @@
-import { Coordinates, Movement, Obstacles } from "../types/common.types";
+import { Coordinates, Movement, Obstacles } from "../../types/common.types";
 
 export default class CollisionHandler {
     getCurrentCoords: () => Coordinates;

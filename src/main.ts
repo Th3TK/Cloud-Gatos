@@ -1,17 +1,26 @@
-import MovementHandler from "./classes/MovementHandler.js";
-import { Game } from "./classes/Game.ts";
+import MovementHandler from "./classes/game/MovementHandler.js";
+import { Game } from "./classes/game/Game";
 import { getSeed } from "./utils/seeds.js";
+import KeyboardHandler from "./classes/game/KeyboardHandler.js";
 
 const playerElement = document.querySelector('#player');
+const obstacleContainer = document.querySelector('#obstacleContainer');
 const gameElement = document.body;
 
 if (!(playerElement instanceof HTMLElement)) throw 'No HTMLElement of id = #player';
+if (!(obstacleContainer instanceof HTMLElement)) throw 'No HTMLElement of id = #obstacleContainer';
 
 const seed = getSeed();
-const game = new Game(gameElement, playerElement, seed);
-const handler = new MovementHandler(game); 
+const game = new Game(gameElement, playerElement, obstacleContainer, seed);
+const movementHandler = new MovementHandler(game); 
+const keyboardHandler = new KeyboardHandler();
 
-document.addEventListener('DOMContentLoaded', () => {
-    handler.start();
+keyboardHandler.registerKeysDown(['w', 'a', 's', 'd'], movementHandler.keyPress);
+keyboardHandler.registerKeysUp(['w', 'a', 's', 'd'], movementHandler.keyRelease);
+keyboardHandler.registerKeyDown('r', game.playerRelease);
+
+document.addEventListener('DOMContentLoaded', () => {    
+    keyboardHandler.start();
+    movementHandler.start();
     game.start();
 });
