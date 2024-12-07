@@ -13,4 +13,5 @@ const handler = new MovementHandler(game);
 
 document.addEventListener('DOMContentLoaded', () => {
     handler.start();
+    game.start();
 });

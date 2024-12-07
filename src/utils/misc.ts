@@ -1,20 +1,18 @@
-export const filterObject = (obj, predicate) =>
+import { Coordinates, ObjectAny, Sizes } from "../types/common.types";
+
+export const filterObject = (obj: ObjectAny, predicate: (a: any) => boolean | undefined) =>
     Object.keys(obj)
         .filter(key => predicate(obj[key]))
-        .reduce((res, key) => (res[key] = obj[key], res), {});
+        .reduce((res, key) => (res[key] = obj[key], res), {} as ObjectAny);
 
 
-export const signDependantFloor = (num) =>
+export const signDependantFloor = (num: number) =>
     num > 0 ? Math.floor(num) : Math.ceil(num);
 
-export function doesSquareContain(square1, square2) {
-    // square1 and square2 are objects with properties: left, right, top, bottom
-    return (
-        square1.right > square2.left ||
-        square1.left < square2.right ||
-        square1.bottom > square2.top ||
-        square1.top < square2.bottom
-    );
-}
+export const doRectanglesOverlap = (coords1: Coordinates, sizes1: Sizes, coords2: Coordinates, sizes2: Sizes) => 
+    coords1.x < coords2.x + sizes2.width && coords1.x + sizes1.width > coords2.x &&
+    coords1.y < coords2.y + sizes2.height && coords1.y + sizes1.height > coords2.y;
 
-export const randomNumber = (min, max) => Math.random() * (max - min) + min;
+export const randomNumber = (min: number, max: number) : number => Math.floor(Math.random() * (max - min)) + min;
+
+export const randomSign = (num: number) => Math.random() < 0.5 ? num : -num;

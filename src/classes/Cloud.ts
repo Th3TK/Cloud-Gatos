@@ -1,6 +1,5 @@
 import { Coordinates } from "../types/common.types";
-
-const container = document.querySelector('#obstacleContainer');
+import { getPos } from "../utils/positioning";
 
 export default class Cloud {
     element: HTMLElement;
@@ -9,13 +8,14 @@ export default class Cloud {
 
     constructor(tileCoordinates: Coordinates, container: HTMLElement) {
         this.tileCoordinates = tileCoordinates;
-        this.element = this.appendToDOM();
         this.container = container;
+        this.element = this.appendToDOM();
         this.appendToDOM = this.appendToDOM.bind(this);
     }
 
-    updatePosition(position: Coordinates) {
-        this.element.style.position = 'absolute';
+    updatePosition(coordinates: Coordinates, playerCoordinates: Coordinates) {
+        const position = getPos(coordinates, playerCoordinates, this.element.offsetWidth);
+
         this.element.style.left = `${position.x}px`;
         this.element.style.top = `${position.y}px`;
     }

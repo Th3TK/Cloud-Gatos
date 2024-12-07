@@ -1,45 +1,51 @@
 import { CHANCE_FOR_CLOUD, CLOUD_WIDTH, MAX_HEIGHT_CLOUDS, MIN_HEIGHT_CLOUDS, TILES_TO_NEW_GATO_HORIZONTAL, TILES_TO_NEW_GATO_VERTICAL } from "../config.ts";
-import { Coordinates } from "../types/common.types.ts";
+import { Coordinates, Obstacles } from "../types/common.types.ts";
 import { filterObject, signDependantFloor } from "../utils/misc.ts";
-import { getPos, randomCoords } from "../utils/positioning.js";
+import { randomCoords } from "../utils/positioning.js";
 import { seededPositionVal } from "../utils/seeds.ts";
 import Cloud from "./Cloud.ts";
 
 export default class Board {
-    seed: number;
-    gridSize: number;
-    viewRadius: number;
-    obstacles: {[x: string]: Cloud};
-    playerPosition: Coordinates;
+    private seed: number;
+    private gridSize: number;
+    private viewRadius: number;
+    private obstacles: Obstacles;
+    private getPlayerCoords: () => Coordinates;
 
-    constructor(seed: number, playerPosition: Coordinates) {
+    constructor(seed: number, getPlayerCoords: () => Coordinates) {
         this.seed = seed;
         this.obstacles = {};
-        this.playerPosition = playerPosition;
+        this.getPlayerCoords = getPlayerCoords;
         this.setDimensions();
+
+        this.getTileCoords = this.getTileCoords.bind(this);
     }
 
-    setDimensions() {
+    public getObstacles = () => this.obstacles;
+
+    private setDimensions() {
         this.gridSize = CLOUD_WIDTH;
         this.viewRadius = Math.ceil(window.innerWidth / CLOUD_WIDTH);
     }
 
-    isObstacle(tileCoordinates: Coordinates) {
+    public isObstacle(tileCoordinates: Coordinates) {
         return (
-            tileCoordinates.y <= MAX_HEIGHT_CLOUDS &&
-            tileCoordinates.y >= MIN_HEIGHT_CLOUDS &&            
-            seededPositionVal(this.seed, tileCoordinates.x, tileCoordinates.y) > (1 - CHANCE_FOR_CLOUD)
+            tileCoordinates.y >= -MAX_HEIGHT_CLOUDS &&
+            tileCoordinates.y <= -MIN_HEIGHT_CLOUDS &&            
+            seededPositionVal(this.seed, tileCoordinates.x, tileCoordinates.y) > (1 - CHANCE_FOR_CLOUD) &&
+            tileCoordinates.x !== 0 &&
+            tileCoordinates.y !== 0
         );
     }
 
-    generateObstacle(tileCoordinates: Coordinates) {
+    private generateObstacle(tileCoordinates: Coordinates) {
         if (tileCoordinates.x === 0 && tileCoordinates.y === 0) return;
         
         const id = `${tileCoordinates.x}:::${tileCoordinates.y}`;
         if (id in this.obstacles) return this.obstacles[id];
 
         if (!this.isObstacle(tileCoordinates)) return null;
-        this.obstacles[id] = new Cloud(tileCoordinates, document.body);
+        this.obstacles[id] = new Cloud(tileCoordinates, document.querySelector('#obstacleContainer') ?? document.body);
     }
 
     generateObstacles(currentTile: Coordinates) {
@@ -75,40 +81,54 @@ export default class Board {
         });
     }
 
-    getTileForGato(){
+    public getTileForGato() : Coordinates{
         const tileCoordinates = randomCoords(this.getCurrentTileCoords(), TILES_TO_NEW_GATO_HORIZONTAL, TILES_TO_NEW_GATO_VERTICAL);
+        tileCoordinates.y = -tileCoordinates.y;
 
         let [x, y, dx, dy] = [0, 0, 0, -1];
 
+        console.log(tileCoordinates, this.isObstacle(tileCoordinates));
         while(!this.isObstacle(tileCoordinates)) {
-            
+            if( (x == y) || (x < 0 && x == -y) || (x > 0 && x == 1 - y)) {
+                [dx, dy] = [-dy, dx];
+            }
+            x += dx;
+            y += dy;
+            tileCoordinates.x += dx;
+            tileCoordinates.y += dy;
+            console.log(tileCoordinates, this.isObstacle(tileCoordinates));
         }
+
+        tileCoordinates.y--;
+
+        return tileCoordinates;
     }
 
     updateObstaclesPositions() {
         for (const obstacle of Object.values(this.obstacles)) {
-            const position = this.getObstaclePosition(obstacle.tileCoordinates);
-            obstacle.updatePosition(position);
+            console.log()
+            obstacle.updatePosition(this.getCoordsFromTile(obstacle.tileCoordinates), this.getPlayerCoords());
         }
     }
 
-    getObstaclePosition(tileCoordinates: Coordinates) {
-        return getPos({
-            x: tileCoordinates.x * this.gridSize, 
-            y: tileCoordinates.y * this.gridSize}, this.playerPosition, CLOUD_WIDTH);
-    }
-
-    getTileCoords(coordinates: Coordinates) {
+    public getTileCoords(coordinates: Coordinates) {
+        console.log(coordinates, this.gridSize)
         return {
             x: signDependantFloor(coordinates.x / this.gridSize),
             y: signDependantFloor(coordinates.y / this.gridSize),
         }
     }
 
-    getCurrentTileCoords = () => this.getTileCoords(this.playerPosition);
+    public getCoordsFromTile(tileCoordinates: Coordinates) {
+        return {
+            x: tileCoordinates.x * this.gridSize,
+            y: tileCoordinates.y * this.gridSize,
+        }
+    }
+
+    getCurrentTileCoords = () => this.getTileCoords(this.getPlayerCoords());
 
     updateBoard(coordinates: Coordinates) {
-        this.playerPosition = coordinates;
         const currentTile = this.getCurrentTileCoords();
 
         this.generateObstacles(currentTile);

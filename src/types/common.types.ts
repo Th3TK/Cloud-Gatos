@@ -1,7 +1,15 @@
+import Cloud from "../classes/Cloud";
+
 export interface Coordinates {
     x: number;
     y: number;
 }
+
+export interface Sizes {
+    width: number;
+    height: number;
+}
+
 export interface Movement {
     x: number;
     y: number;
@@ -18,4 +26,12 @@ export interface Pressed {
     left: boolean,
     right: boolean,
     [x: string]: boolean,
+}
+
+export interface Obstacles {
+    [key: string]: Cloud,
+};
+
+export interface ObjectAny {
+    [key: string]: any,
 }

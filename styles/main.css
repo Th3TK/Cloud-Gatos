@@ -37,3 +37,12 @@ body, main {
     align-items: center;
     color: white;
 }
+
+.gato {
+    position: absolute;
+
+    width: 25px;
+    height: 25px;
+    background-color: black;
+    z-index: 100;
+}

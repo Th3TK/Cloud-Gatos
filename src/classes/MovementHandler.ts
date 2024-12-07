@@ -45,6 +45,8 @@ export default class MovementHandler {
         this.pressed[KEYS_MAPPED[key]] = false;
     }
 
+    clearMovement = () => Object.keys(this.pressed).forEach(key => this.pressed[key] = false);
+
     updateMovement() {
         const pos = this.calculateDistanceToAdd();
         this.game.updatePositions(pos);
@@ -60,6 +62,7 @@ export default class MovementHandler {
     start() {
         document.addEventListener('keydown', this.handleButtonDown);
         document.addEventListener('keyup', this.handleButtonUp);
+        window.addEventListener('blur', this.clearMovement);
 
         this.updateInterval = setInterval(this.updateMovement, 1000 / UPDATES_PER_SECOND);
         this.game.updatePositions({x: 1, y: 1});
@@ -68,6 +71,8 @@ export default class MovementHandler {
     destroy() {
         document.removeEventListener('keydown', this.handleButtonDown);
         document.removeEventListener('keyup', this.handleButtonUp);
+        window.removeEventListener('blur', this.clearMovement);
+
         clearInterval(this.updateInterval);
     }
 }
