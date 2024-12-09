@@ -179,8 +179,8 @@ export default class EnemiesHolder {
 
     // boolean indicating if enemy is hidden
     private updateVisibility = (enemy: Enemy) => {
-        if(this.mode !== 'disengage' && enemy.isHidden()) {
-            enemy.show();
+        if(this.mode !== 'disengage') {
+            if(enemy.isHidden()) enemy.show();
             return true;
         }
 
@@ -191,6 +191,7 @@ export default class EnemiesHolder {
 
     // true if successful gato steal 
     private tryStealingGato = (enemy: Enemy) => {
+        console.log(this.gato, this.mode)
         if(!this.gato || this.mode !== 'attack') return false;
         
         const pickedGato = enemy.tryPick(this.gato);

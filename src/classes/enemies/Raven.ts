@@ -4,7 +4,7 @@ import Board from "../environment/Board";
 import Gato from "../game/Gato";
 import Player from "../game/Player";
 import { EnemyTargets } from "../../types/enemies.types";
-import { PATHFINDING_GRID_RANGE, RAVEN_SPEED, RAVEN_SPEED_STEAL } from "../../config";
+import { PATHFINDING_GRID_RANGE, RAVEN_SPEED, RAVEN_SPEED_STEAL, RAVEN_SPEED_WITH_GATO } from "../../config";
 import { addCoords, coordinatesEqual, offsetCoords, pairToCoords, reverseOffsetCoords, straightLineDistance } from "../../utils/positioning";
 import { clamp, clampEqual } from "../../utils/misc";
 import { AStarFinder } from 'astar-typescript';
@@ -111,9 +111,12 @@ export default class Raven extends Carrier {
 
         if(this.board.isObstacle(nextTile)) console.error("Invalid raven move: ", nextMove, "Tile: ", nextTile, "Path: ", this.path)
         
+        const holdingGato = !!this.getPickable();
+        const speed = holdingGato ? RAVEN_SPEED : RAVEN_SPEED_WITH_GATO;
+
         this.move({
-            x: clampEqual(nextTileCoords.x - currentCoords.x, RAVEN_SPEED),
-            y: clampEqual(nextTileCoords.y - currentCoords.y, RAVEN_SPEED),
+            x: clampEqual(nextTileCoords.x - currentCoords.x, speed),
+            y: clampEqual(nextTileCoords.y - currentCoords.y, speed),
         })
 
         if(coordinatesEqual(nextTileCoords, this.getCoords())) {

@@ -35,4 +35,5 @@ export const getPointerRadius = () => window.innerHeight / 2 - 250;
 /* Enemies - Ravens */
 export const PATHFINDING_GRID_RANGE = 10; // range from player (in the center), so when 25 the grid is 51x51
 export const RAVEN_SPEED = 9;
+export const RAVEN_SPEED_WITH_GATO = 7;
 export const RAVEN_SPEED_STEAL = 10;

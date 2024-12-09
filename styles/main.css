@@ -94,6 +94,7 @@ main {
 
     width: 90px;
     height: 90px;
+    transform: translateY(75%);
     background-image: url('/assets/box_opened.png');
     z-index: 50;
 }
