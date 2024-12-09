@@ -15,12 +15,12 @@ export default class GatoBoxPair {
         this.successCallback = successCallback;
     }
 
-    public create(container: HTMLElement, verticalOffset: number) {
+    public create(container: HTMLElement) {
         this.box.createBox(container);
         this.gato.createGato(container);
 
-        this.box.move({x: 0, y: verticalOffset - this.gato.getSizes().height / 2});
-        this.gato.move({x: 0, y: verticalOffset - this.box.getSizes().height / 2});
+        this.box.move({x: 0, y: -this.box.getSizes().height / 2});
+        this.gato.move({x: 0, y: -this.gato.getSizes().height / 2});
     }
 
     public remove() {

@@ -2,6 +2,10 @@ import { MAX_HEIGHT_CLOUDS, MIN_HEIGHT_CLOUDS } from "../config";
 import { Coordinates, MinMax } from "../types/common.types.js"
 import { randomSign, randomNumber } from "./misc.ts"
 
+export const coordsToPair = (coordinates: Coordinates) : [x: number, y: number] => [coordinates.x, coordinates.y];
+
+export const pairToCoords = (pair: [x: number, y: number]) : Coordinates => ({x: pair?.[0] || NaN, y: pair?.[1] || NaN});
+
 export const getPos = (
     coords: Coordinates, 
     playerCoordinates: Coordinates, 
@@ -15,8 +19,6 @@ export const getPos = (
 export const randomCoords = (center: Coordinates, horizontal: MinMax, vertical: MinMax) => {
     let x = center.x + randomSign(randomNumber(horizontal.min, horizontal.max));
     let y = center.y + randomSign(randomNumber(vertical.min, vertical.max));
-
-    console.log(x, y)
 
     if(y < -MAX_HEIGHT_CLOUDS) y = -MAX_HEIGHT_CLOUDS;
     if(y > -MIN_HEIGHT_CLOUDS) y = -MIN_HEIGHT_CLOUDS;
@@ -42,5 +44,31 @@ export function isElementVisible(element: HTMLElement | null | undefined): boole
 export const coordinatesEqual = (coords1: Coordinates, coords2: Coordinates) => 
     coords1.x === coords2.x && coords1.y === coords2.y;
 
-export const coordinatesAlmostEqual = (coords1: Coordinates, coords2: Coordinates, marginX: number, marginY: number) =>
+export const coordinatesAlmostEqual = (coords1: Coordinates, coords2: Coordinates, marginX: number, marginY: number = marginX) =>
     Math.abs(coords1.x - coords2.x) < marginX && Math.abs(coords1.y - coords2.y) < marginY;
+
+export const offsetCoords = (coords: Coordinates, offset: Coordinates) => ({
+    x: coords.x - offset.x,
+    y: coords.y - offset.y,
+})
+
+export const reverseOffsetCoords = (coords: Coordinates, offset: Coordinates) => ({
+    x: coords.x + offset.x,
+    y: coords.y + offset.y,
+})
+
+export const addCoords = (coords1: Coordinates, coords2: Coordinates) : Coordinates => ({
+    x: coords1.x + coords2.x,
+    y: coords1.y + coords2.y,
+})
+
+
+export const subtractCoords = (coords1: Coordinates, coords2: Coordinates) : Coordinates => ({
+    x: coords1.x - coords2.x,
+    y: coords1.y - coords2.y,
+})
+
+export const straightLineDistance = (coords1: Coordinates, coords2: Coordinates) : number => {
+    const difference = subtractCoords(coords1, coords2);
+    return Math.sqrt(difference.x ** 2 + difference.y ** 2);
+}

@@ -1,22 +1,16 @@
-import { CloudSizes, Coordinates } from "../../types/common.types";
+import { BOARD_TILE_HEIGHT, BOARD_TILE_WIDTH } from "../../config";
+import { Coordinates } from "../../types/common.types";
 import { getPos } from "../../utils/positioning";
-
-const cloudSizes = {
-    1: 'small',
-    2: 'medium',
-    3: 'large',
-}
 
 export default class Cloud {
     element: HTMLElement;
     container: HTMLElement;
     tileCoordinates: Coordinates;
-    size: CloudSizes;
 
-    constructor(tileCoordinates: Coordinates, container: HTMLElement, size: CloudSizes) {
+    constructor(tileCoordinates: Coordinates, container: HTMLElement) {
         this.tileCoordinates = tileCoordinates;
         this.container = container;
-        this.element = this.appendToDOM(size);
+        this.element = this.appendToDOM();
         this.appendToDOM = this.appendToDOM.bind(this);
     }
 
@@ -24,14 +18,15 @@ export default class Cloud {
         const position = getPos(coordinates, playerCoordinates, this.element.offsetWidth);
 
         this.element.style.left = `${position.x}px`;
-        this.element.style.top = `${position.y}px`;
+        this.element.style.top = `${position.y + this.element.offsetHeight/2}px`;
     }
 
-    appendToDOM(size: CloudSizes) {
+    appendToDOM() {
         const element = document.createElement('div');
 
         element.classList.add('cloud');
-        element.classList.add(`${cloudSizes[size]}`);
+        element.style.width = `${BOARD_TILE_WIDTH}px`;
+        element.style.height = `${BOARD_TILE_HEIGHT}px`;
         element.innerHTML = `${this.tileCoordinates.x} ${this.tileCoordinates.y}`
 
         this.container.appendChild(element);

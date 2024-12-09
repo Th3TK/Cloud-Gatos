@@ -1,4 +1,3 @@
-import { UPDATES_PER_SECOND } from "../../config";
 import { Coordinates } from "../../types/common.types";
 import Entity from "./Entity";
 

@@ -6,9 +6,14 @@ export default class Player extends Carrier {
         super(element, coordinates);
     }
 
-    move(movement: Movement) {
+    public move(movement: Movement): void {
         super.move(movement);
 
-        if(this.element) this.element.innerText = `${this.coordinates.x} ${this.coordinates.y}`;
+        if(!this.element) return;
+        
+        const movingRight = movement.x > 0;
+        this.element.style.transform = `translate(-50%, -50%) scaleX(${movingRight ? -1 : 1})`;
+        if(this.pickable?.element) this.pickable.element.style.transform = 
+            movingRight ? 'translate(10px, 48px) scaleX(-1)' : 'translate(-10px, 48px) scaleX(1)';
     }
 }

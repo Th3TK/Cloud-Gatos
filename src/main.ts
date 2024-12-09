@@ -15,9 +15,14 @@ if (!(pointerElement instanceof HTMLElement)) throw 'No HTMLElement of id = #poi
 if (!(obstacleContainer instanceof HTMLElement)) throw 'No HTMLElement of id = #obstacleContainer';
 
 const seed = getSeed();
-const game = new Game(gameElement, playerElement, obstacleContainer, pointerElement, pointsCounter, seed);;
+const game = new Game(gameElement, playerElement, obstacleContainer, pointerElement, pointsCounter, seed);
 const movementHandler = new MovementHandler(game); 
 const keyboardHandler = new KeyboardHandler();
+
+game.addGameLostCallback(() => {
+    movementHandler.stop();
+    keyboardHandler.stop();
+})
 
 keyboardHandler.registerKeysDown(['w', 'a', 's', 'd'], movementHandler.keyPress);
 keyboardHandler.registerKeysUp(['w', 'a', 's', 'd'], movementHandler.keyRelease);

@@ -1,9 +1,12 @@
 import Board from "../environment/Board.js";
 import Player from "./Player.js";
-import { Movement } from "../../types/common.types.js";
+import { Coordinates, Direction, Movement, Sizes } from "../../types/common.types.js";
 import Pointer from "./Pointer.js";
 import { isElementVisible } from "../../utils/positioning.js";
 import GatoBoxPair from "./GatoBoxPair.js";
+import { WATER_LEVEL } from "../../config.js";
+import EnemiesHolder from "../enemies/EnemiesHolder.js";
+import Raven from "../enemies/Raven.js";
 
 export class Game {
     private element: HTMLElement;
@@ -12,7 +15,9 @@ export class Game {
     private board: Board;
     private gatoBoxPair: GatoBoxPair | null = null;
     private pointer: Pointer;
+    private enemies: EnemiesHolder;
     private points = 0;
+    private gameLostCallback: () => void;
 
     constructor(
         gameElement: HTMLElement, 
@@ -20,19 +25,54 @@ export class Game {
         obstacleContainer: HTMLElement, 
         pointerElement: HTMLElement, 
         pointCounter: HTMLElement,
-        seed: number
+        seed: number,
     ) {
         this.element = gameElement;
         this.pointCounter = pointCounter;
         this.player = new Player(playerElement);
         this.board = new Board(seed, obstacleContainer, this.player.getCoords);
         this.pointer = new Pointer(pointerElement);
+        this.enemies = new EnemiesHolder(this.board, this.player, this.gatoBoxPair?.gato);
         this.player.addCollisionHandler(this.board);
 
-        this.playerRelease = this.playerRelease.bind(this);
         this.addPoint = this.addPoint.bind(this);
+        this.playerRelease = this.playerRelease.bind(this);
         this.newBoxGatoPair = this.newBoxGatoPair.bind(this);
+        this.playerEnteredNewTile = this.playerEnteredNewTile.bind(this);
     }
+
+    
+
+    /* .................................. */
+    /* to be called outside the game      */
+    /* .................................. */
+    
+    public addGameLostCallback = (gameLostCallback: () => void) => this.gameLostCallback = gameLostCallback;
+
+    public playerRelease() {
+        if(!this.gatoBoxPair || !this.player.getPickable()) return;
+        
+        this.player.release();
+        this.pointer.pointAt(this.gatoBoxPair.gato);
+        this.enemies.setTarget(this.gatoBoxPair.gato);
+    }
+
+    /* .................................. */
+    /*              PLAYER                */
+    /* .................................. */
+
+    private playerEnteredNewTile(last: Coordinates, current: Coordinates) {
+        if(!last) return;
+
+        if(last.y !== current.y) this.enemies.shiftPathFindingMatrix(last.y > current.y ? 'up' : 'down');
+        if(last.x !== current.x) this.enemies.shiftPathFindingMatrix(last.x > current.x ? 'left' : 'right');
+        
+        this.enemies.runEnemyUpdate();
+    }
+
+    /* .................................. */
+    /*           GATO 🐈🐈🐈             */
+    /* .................................. */
 
     private getNewGatoBoxPairCoordinates() {
         const gatoCoordinates = this.board.getCoordsFromTile(this.board.getTileForGato());
@@ -47,11 +87,59 @@ export class Game {
         if(this.gatoBoxPair) this.gatoBoxPair.remove();
         
         this.gatoBoxPair = new GatoBoxPair(boxCoordinates, gatoCoordinates, this.board, this.addPoint);
-        this.gatoBoxPair.create(this.element, this.board.getGridSize() / 2);
+        this.gatoBoxPair.create(this.element);
 
         this.pointer.pointAt(this.gatoBoxPair.gato);
         this.gatoBoxPair?.gato?.updatePosition(this.player.getCoords());
         this.gatoBoxPair?.box?.updatePosition(this.player.getCoords());
+        this.enemies.assignGato(this.gatoBoxPair.gato);
+    }
+
+
+    /* .................................. */
+    /*              UPDATE                */
+    /* .................................. */
+
+    private checkForGatoPickUps(){
+        if(!this.gatoBoxPair || !this.player.getCanPick()) return;
+
+        const pickedUp = this.player.tryPick(this.gatoBoxPair.gato);
+        if(!pickedUp) return;
+        
+        this.pointer.pointAt(this.gatoBoxPair.box);
+        this.enemies.enterAttackMode(); 
+    }
+
+    private updateGatoBoxPair(playerCoords: Coordinates) {
+        if(!this.gatoBoxPair) return;
+
+        if(this.board.isObjectInRenderedTiles(playerCoords, this.gatoBoxPair?.gato?.getCoords())) {
+            this.checkForGatoPickUps();
+            this.gatoBoxPair?.gato?.updatePosition(playerCoords);
+        }
+
+        if(this.board.isObjectInRenderedTiles(playerCoords, this.gatoBoxPair?.box?.getCoords())) {
+            this.gatoBoxPair?.box?.updatePosition(playerCoords);
+        }
+        this.gatoBoxPair.checkForGatoInABox();
+    }
+
+    private updatePointer(playerCoords: Coordinates, playerSizes: Sizes) {
+        if(!isElementVisible(this.pointer.getTarget()?.element)) this.pointer.show();
+        else this.pointer.hide();
+        
+        this.pointer.updatePointing(playerCoords, playerSizes);
+    }
+
+    /* .................................. */
+    /*               GAME                 */
+    /* .................................. */
+
+    public start() {
+        this.newBoxGatoPair();
+        this.gatoBoxPair?.gato?.updatePosition(this.player.getCoords());
+        this.enemies.addEnemy(new Raven(this.element, this.board));
+        this.enemies.enterDisengageMode();
     }
 
     protected addPoint() {
@@ -59,52 +147,37 @@ export class Game {
 
         this.playerRelease();
         this.newBoxGatoPair();
+        this.enemies.enterDisengageMode();
         this.pointCounter.innerText = `${++this.points}`;
     }
 
-    private checkForGatoPickUps(){
-        if(!this.gatoBoxPair) return;
+    private checkIfGameLost() {
+        if(!this.gatoBoxPair?.gato) return false;
+        if(this.gatoBoxPair.gato.getCoords().y > WATER_LEVEL) return true;   
+    }
+
+    private gameLost() {
+        console.log('Game over.');
+        if(this.gameLostCallback) this.gameLostCallback();
+    }
+
+    public tick(movement: Movement) {
         
-        let pickedUp = false;
-        if(this.player.getCanPick()) pickedUp = this.player.tryPick(this.gatoBoxPair.gato);
-        if(pickedUp) this.pointer.pointAt(this.gatoBoxPair.box);
-    }
-
-    public start() {
-        this.newBoxGatoPair();
-        this.gatoBoxPair?.gato?.updatePosition(this.player.getCoords());
-    }
-
-    public playerRelease() {
-        if(!this.gatoBoxPair) return;
-        
-        this.player.release();
-        this.pointer.pointAt(this.gatoBoxPair.gato);
-    }
-
-    public updatePositions(movement: Movement) {
         if(movement.x || movement.y) this.player.move(movement);
         
         const playerCoords = this.player.getCoords();
         const playerSizes = this.player.getSizes(); 
         
-        if(this.gatoBoxPair) {
-            if(this.board.isObjectInRenderedTiles(playerCoords, this.gatoBoxPair?.gato?.getCoords())) {
-                this.checkForGatoPickUps();
-                this.gatoBoxPair?.gato?.updatePosition(playerCoords);
-            }
+        this.updateGatoBoxPair(playerCoords); 
+        this.updatePointer(playerCoords, playerSizes);
+        
+        this.board.updateBoard(this.playerEnteredNewTile);
+        
+        const enemyWithGato = this.enemies.updatePositions();
+        if(enemyWithGato) this.pointer.pointAt(enemyWithGato);
 
-            if(this.board.isObjectInRenderedTiles(playerCoords, this.gatoBoxPair?.box?.getCoords())) {
-                this.gatoBoxPair?.box?.updatePosition(playerCoords);
-            }
-            this.gatoBoxPair.checkForGatoInABox();
-        } 
-        
-        this.board.updateBoard();
-        
-        if(!isElementVisible(this.pointer.getTarget()?.element)) this.pointer.show();
-        else this.pointer.hide();
-        
-        this.pointer.updatePointing(playerCoords, playerSizes);
+        if(this.checkIfGameLost()) this.gameLost();
     }
+
+    
 }

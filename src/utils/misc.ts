@@ -20,3 +20,30 @@ export const randomSign = (num: number) => Math.random() < 0.5 ? num : -num;
 export const clamp = (n: number, max: number, min: number) => Math.max(Math.min(n, Math.max(max, min)), Math.min(max, min));
 
 export const clampEqual = (n: number, range: number) => clamp(n, range, -range);
+
+export const indicePairInMatrix = (matrix: any[][], x: number, y: number) => 
+    x >= 0 && y >= 0 && matrix.length > y && matrix[y].length > x;
+
+export const indicePairInMatrixOfSizes = (width: number, height: number, x: number, y: number) => 
+    x >= 0 && y >= 0 && height > y && width > x;
+
+export const matrixFrom = (length: number, callback: (y: number, x: number) => any) => (
+    Array.from({length}, (_, y) => 
+        Array.from({length}, (_, x) => 
+            callback(y, x)
+        )
+    )
+);
+
+export const matrixForEach = (matrix: any[][], callback: (e: any, y: number, x: number) => any) => 
+    matrix.forEach((row, y) => row.forEach((e, x) => callback(e, y, x)));
+
+export function isInViewport(element: HTMLElement) {
+    const rect = element.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}

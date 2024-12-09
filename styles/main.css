@@ -1,11 +1,15 @@
 * {
     font-family: Tahoma;
     image-rendering: pixelated;
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 
-body, main {
+body,
+main {
     margin: 0;
     overflow: hidden;
+    background-color: #81caed;
 }
 
 #pointsCounter {
@@ -23,32 +27,40 @@ body, main {
 
 #player {
     position: absolute;
-    top: 50%;  
+    top: 50%;
     left: 50%;
 
-    transform: translate(-50%, -50%);
-
-    width: 100px;
-    height: 100px;
-    background-color: red;
+    width: 150px;
+    height: 90px;
+    /* background-color: rgba(255, 0, 0, 0.368); */
 
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
+    animation: playerBackgroundAnimation 0.4s steps(1) infinite;
+    z-index: 60;
+}
+
+@keyframes playerBackgroundAnimation {
+    0% {
+        background-image: url('/assets/player_1.png');
+    }
+    50% {
+        background-image: url('/assets/player_2.png');
+    }
 }
 
 #pointer {
     position: absolute;
 
-    width: 85px;
-    height: 85px;
+    width: 65px;
+    height: 65px;
 
     opacity: 0;
-    
+
     background-image: url('/assets/arrow.png');
-    background-size: contain;
-    transition: opacity 0.25s ease-in-out;
+    /* transition: opacity 0.25s ease-in-out; */
 
     z-index: 100;
 }
@@ -56,43 +68,53 @@ body, main {
 .cloud {
     position: absolute;
 
-    width: 200px;
-    height: 50px;
-    background-color: gray;
-    box-sizing: border-box;
-    border: darkgray 5px solid;
+    background-image: url('/assets/cloud.png');
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
-}
-
-.cloud.small {
-    height: 50px;
-}
-
-.cloud.medium {
-    height: 75px;
-}
-
-.cloud.large {
-    height: 90apx;
+    color: black;
 }
 
 .gato {
     position: absolute;
 
-    width: 25px;
-    height: 25px;
-    background-color: black;
+    width: 70px;
+    height: 65px;
+    background-image: url('/assets/gato_orange_sitting.png');
+
     z-index: 50;
+}
+
+.gato[picked]{
+    background-image: url('/assets/gato_orange_picked.png');
 }
 
 .box {
     position: absolute;
 
-    width: 30px;
-    height: 30px;
-    background-color: #9c00e4;
+    width: 90px;
+    height: 90px;
+    background-image: url('/assets/box_opened.png');
     z-index: 50;
+}
+
+.raven {
+    position: absolute;
+
+    width: 150px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    animation: ravenRedBackgroundAnimation 0.4s steps(1) infinite;
+}
+
+@keyframes ravenRedBackgroundAnimation {
+    0% {
+        background-image: url('/assets/raven_red_1.png');
+    }
+    50% {
+        background-image: url('/assets/raven_red_2.png');
+    }
 }

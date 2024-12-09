@@ -1,11 +1,11 @@
-import Cloud from "../classes/environment/Cloud";
-
-export type CloudSizes = 1 | 2 | 3;
-
 export interface Coordinates {
     x: number;
     y: number;
 }
+
+export type Direction = 'up' | 'down' | 'left' | 'right';
+
+export type CoordinatesPair = [x: number, y: number]
 
 export interface Sizes {
     width: number;
@@ -23,17 +23,13 @@ export interface MinMax {
 }
 
 export interface Pressed {
-    up: boolean,
-    down: boolean,
-    left: boolean,
-    right: boolean,
-    [x: string]: boolean,
+    up: boolean;
+    down: boolean;
+    left: boolean;
+    right: boolean;
+    [x: string]: boolean;
 }
 
-export interface Obstacles {
-    [key: string]: Cloud,
-};
-
 export interface ObjectAny {
-    [key: string]: any,
+    [key: string]: any;
 }

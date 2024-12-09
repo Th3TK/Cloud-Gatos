@@ -33,7 +33,7 @@ export default class Entity {
     public move(movement: Movement) {
         let handledMovement = movement;
         if(this.element && this.collisionHandler) handledMovement = this.collisionHandler?.handleCollisions(this.element, movement) ?? handledMovement;
-
+        
         this.coordinates.x += handledMovement.x;
         this.coordinates.y += handledMovement.y;
     }

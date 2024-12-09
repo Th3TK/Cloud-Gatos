@@ -1,4 +1,6 @@
-import { Coordinates, Movement, Obstacles } from "../../types/common.types";
+import { Obstacles } from "../../types/board.types";
+import { Coordinates, Movement } from "../../types/common.types";
+import { signDependantFloor } from "../../utils/misc";
 
 export default class CollisionHandler {
     getCurrentCoords: () => Coordinates;
@@ -30,8 +32,9 @@ export default class CollisionHandler {
         const objectRect = element.getBoundingClientRect();
         const colliders = this.getColliders();
 
-        for (let dx = currentTile.x - 1; dx <= currentTile.x + 1; dx++) {
-            for (let dy = currentTile.y - 1; dy <= currentTile.y + 1; dy++) {
+        // check only the tiles around the tile the Entity is in
+        for (let dx = currentTile.x - 2; dx <= currentTile.x + 2; dx++) {
+            for (let dy = currentTile.y - 2; dy <= currentTile.y + 2; dy++) {
                 const id = `${dx}:::${dy}`;
 
                 if (!(id in colliders)) continue;
@@ -39,12 +42,13 @@ export default class CollisionHandler {
                 const rect = colliders[id].element.getBoundingClientRect();
                 const overlaps = this.willOverlap(objectRect, rect, movement);
 
-                if (overlaps.horizontal) output.x = 0;
-                if (overlaps.vertical) output.y = 0;
+                // calculate ideal velocity for perfect collision (without any gap in between)
+                if (overlaps.horizontal) output.x = signDependantFloor(output.x > 0 ? Math.max(rect.left - objectRect.right, 0) : Math.min(rect.right - objectRect.left, 0));
+                if (overlaps.vertical) output.y = signDependantFloor(output.y > 0 ? Math.max(rect.top - objectRect.bottom, 0) : Math.min(rect.bottom - objectRect.top, 0));
                 if (!output.x && !output.y) return { x: 0, y: 0 };
             }
         }
-
+        
         return output;
     }
 }

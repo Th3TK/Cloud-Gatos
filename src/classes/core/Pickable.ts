@@ -10,13 +10,16 @@ export default class Pickable extends Fallable {
     public isPicked = () => this.picked;
 
     public pickUp(carrier: Carrier) {
+        if(this.carrier) this.carrier.clearPickable();
         this.picked = true;
         this.carrier = carrier;
+        this.element?.setAttribute('picked', '');
     }
 
     public release() {
         this.picked = false;
         this.carrier = null;
+        this.element?.removeAttribute('picked');
     }
     
     public updatePosition(playerCoords: Coordinates) {
@@ -24,7 +27,6 @@ export default class Pickable extends Fallable {
 
         if (this.picked && this.carrier) {
             this.coordinates = structuredClone(this.carrier.getCoords());
-            this.coordinates.y += this.carrier.getSizes().height / 2 - this.getSizes().height / 2;
         }
 
         if(!this.picked) this.calculateFalling();
@@ -33,6 +35,6 @@ export default class Pickable extends Fallable {
     }
 
     public canBePickedBy = (carrier: Carrier) => 
-        !this.picked && doRectanglesOverlap(this.coordinates, this.getSizes(), carrier.getCoords(), carrier.getSizes());
+        doRectanglesOverlap(this.coordinates, this.getSizes(), carrier.getCoords(), carrier.getSizes());
 }
 

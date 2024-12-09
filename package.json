@@ -5,10 +5,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/fast-astar": "^1.0.3",
     "typescript": "^5.7.2",
     "vite": "^6.0.3"
   },
   "dependencies": {
+    "astar-typescript": "^1.2.7",
     "simplex-noise": "^3.0.1"
   }
 }

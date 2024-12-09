@@ -46,7 +46,7 @@ export default class MovementHandler {
 
     private updateMovement() {
         const pos = this.calculateDistanceToAdd();
-        this.game.updatePositions(pos);
+        this.game.tick(pos);
     }
 
     private calculateVelocity() {
@@ -84,10 +84,10 @@ export default class MovementHandler {
         window.addEventListener('blur', this.clearMovement);
 
         this.updateInterval = setInterval(this.updateMovement, 1000 / UPDATES_PER_SECOND);
-        this.game.updatePositions({x: 1, y: 1});
+        this.game.tick({x: 1, y: 1});
     }
 
-    public destroy() {
+    public stop() {
         window.removeEventListener('blur', this.clearMovement);
         clearInterval(this.updateInterval);
     }
