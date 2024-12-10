@@ -1,19 +1,19 @@
-import { Obstacles } from "../../types/board.types";
-import { Coordinates, Movement } from "../../types/common.types";
+import { Movement, Rect } from "../../types/common.types";
 import { signDependantFloor } from "../../utils/misc";
+import { rectFromCoordsAndSizes } from "../../utils/positioning";
+import Board from "../environment/Board";
+import Entity from "./Entity";
 
 export default class CollisionHandler {
-    getCurrentCoords: () => Coordinates;
-    getTileCoords: (coords: Coordinates) => Coordinates;
-    getColliders: () => Obstacles;
+    parent: Entity;
+    board: Board;
 
-    constructor(getCoords: () => Coordinates, getTileCoords: (coords: Coordinates) => Coordinates, getColliders: () => Obstacles) {
-        this.getCurrentCoords = getCoords;
-        this.getTileCoords = getTileCoords;
-        this.getColliders = getColliders;
+    constructor(parent: Entity, board: Board) {
+        this.parent = parent;
+        this.board = board;
     }
 
-    willOverlap(objectRect: DOMRect, colliderRect: DOMRect, movement: Movement) {
+    willOverlap(objectRect: Rect, colliderRect: Rect, movement: Movement) {
         const horizontalBounds = objectRect.left < colliderRect.right && objectRect.right > colliderRect.left;
         const verticalBounds = objectRect.top < colliderRect.bottom && objectRect.bottom > colliderRect.top;
 
@@ -26,25 +26,31 @@ export default class CollisionHandler {
         };
     }
 
-    handleCollisions(element: HTMLElement, movement: Movement): Movement {
-        const output = movement;
-        const currentTile = this.getTileCoords(this.getCurrentCoords());
-        const objectRect = element.getBoundingClientRect();
-        const colliders = this.getColliders();
+    handleCollisions(movement: Movement): Movement {
+        const output = {...movement};
+        const parentCoords = this.parent.getCoords();
+        const parentSizes = this.parent.getSizes();
+        const parentRect = rectFromCoordsAndSizes(parentCoords, parentSizes);
+        const currentParentTile = this.board.getTileCoords(parentCoords);
+
+        const colliders = this.board.getObstacles();
 
         // check only the tiles around the tile the Entity is in
-        for (let dx = currentTile.x - 2; dx <= currentTile.x + 2; dx++) {
-            for (let dy = currentTile.y - 2; dy <= currentTile.y + 2; dy++) {
+        for (let dx = currentParentTile.x - 2; dx <= currentParentTile.x + 2; dx++) {
+            for (let dy = currentParentTile.y - 2; dy <= currentParentTile.y + 2; dy++) {
                 const id = `${dx}:::${dy}`;
-
                 if (!(id in colliders)) continue;
-
-                const rect = colliders[id].element.getBoundingClientRect();
-                const overlaps = this.willOverlap(objectRect, rect, movement);
+                
+                const colliderCoords = this.board.getCoordsFromTile(colliders[id].getTileCoords());
+                const colliderSizes = colliders[id].getSizes();
+                const colliderRect = rectFromCoordsAndSizes(colliderCoords, colliderSizes);
+                
+                const overlaps = this.willOverlap(parentRect, colliderRect, movement);
 
                 // calculate ideal velocity for perfect collision (without any gap in between)
-                if (overlaps.horizontal) output.x = signDependantFloor(output.x > 0 ? Math.max(rect.left - objectRect.right, 0) : Math.min(rect.right - objectRect.left, 0));
-                if (overlaps.vertical) output.y = signDependantFloor(output.y > 0 ? Math.max(rect.top - objectRect.bottom, 0) : Math.min(rect.bottom - objectRect.top, 0));
+                if (overlaps.horizontal) output.x = signDependantFloor(output.x > 0 ? Math.max(colliderRect.left - parentRect.right, 0) : Math.min(parentRect.right - colliderRect.left, 0));
+                if (overlaps.vertical) output.y = signDependantFloor(output.y > 0 ? Math.max(colliderRect.top - parentRect.bottom, 0) : Math.min(parentRect.bottom - colliderRect.top, 0));
+                
                 if (!output.x && !output.y) return { x: 0, y: 0 };
             }
         }

@@ -12,6 +12,13 @@ export interface Sizes {
     height: number;
 }
 
+export interface Rect {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+}
+
 export interface Movement {
     x: number;
     y: number;

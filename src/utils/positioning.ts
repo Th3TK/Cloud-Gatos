@@ -1,5 +1,5 @@
 import { MAX_HEIGHT_CLOUDS, MIN_HEIGHT_CLOUDS } from "../config";
-import { Coordinates, MinMax } from "../types/common.types.js"
+import { Coordinates, MinMax, Sizes } from "../types/common.types.js"
 import { randomSign, randomNumber } from "./misc.ts"
 
 export const coordsToPair = (coordinates: Coordinates) : [x: number, y: number] => [coordinates.x, coordinates.y];
@@ -72,3 +72,10 @@ export const straightLineDistance = (coords1: Coordinates, coords2: Coordinates)
     const difference = subtractCoords(coords1, coords2);
     return Math.sqrt(difference.x ** 2 + difference.y ** 2);
 }
+
+export const rectFromCoordsAndSizes = (coords: Coordinates, sizes: Sizes) => ({
+    left: coords.x,
+    top: coords.y,
+    right: coords.x + sizes.width,
+    bottom: coords.y + sizes.height,
+})

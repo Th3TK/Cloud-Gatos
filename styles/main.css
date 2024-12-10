@@ -12,6 +12,12 @@ main {
     background-color: #81caed;
 }
 
+#game-canvas {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
 #pointsCounter {
     position: absolute;
     top: 10px;

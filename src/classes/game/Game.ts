@@ -1,18 +1,20 @@
 import Board from "../environment/Board.js";
 import Player from "./Player.js";
-import { Coordinates, Direction, Movement, Sizes } from "../../types/common.types.js";
+import { Coordinates, Movement, Sizes } from "../../types/common.types.js";
 import Pointer from "./Pointer.js";
 import { isElementVisible } from "../../utils/positioning.js";
 import GatoBoxPair from "./GatoBoxPair.js";
 import { WATER_LEVEL } from "../../config.js";
 import EnemiesHolder from "../enemies/EnemiesHolder.js";
 import Raven from "../enemies/Raven.js";
+import CanvasDisplay from "../display/CanvasDisplay.js";
 
 export class Game {
     private element: HTMLElement;
     private pointCounter: HTMLElement;
     private player: Player;
     private board: Board;
+    private canvasDisplay: CanvasDisplay;
     private gatoBoxPair: GatoBoxPair | null = null;
     private pointer: Pointer;
     private enemies: EnemiesHolder;
@@ -21,20 +23,22 @@ export class Game {
 
     constructor(
         gameElement: HTMLElement, 
-        playerElement: HTMLElement, 
-        obstacleContainer: HTMLElement, 
+        playerElement: HTMLElement,  
         pointerElement: HTMLElement, 
         pointCounter: HTMLElement,
+        gameCanvas: HTMLCanvasElement,
         seed: number,
     ) {
         this.element = gameElement;
         this.pointCounter = pointCounter;
+
         this.player = new Player(playerElement);
-        this.board = new Board(seed, obstacleContainer, this.player.getCoords);
+        this.board = new Board(seed, this.player);
         this.pointer = new Pointer(pointerElement);
+        this.canvasDisplay = new CanvasDisplay(gameCanvas, this.board);
         this.enemies = new EnemiesHolder(this.board, this.player, this.gatoBoxPair?.gato);
         this.player.addCollisionHandler(this.board);
-
+        
         this.addPoint = this.addPoint.bind(this);
         this.playerRelease = this.playerRelease.bind(this);
         this.newBoxGatoPair = this.newBoxGatoPair.bind(this);
@@ -83,15 +87,12 @@ export class Game {
 
     private newBoxGatoPair() {
         const {boxCoordinates, gatoCoordinates} = this.getNewGatoBoxPairCoordinates();
-
-        if(this.gatoBoxPair) this.gatoBoxPair.remove();
-        
+                
+        console.log(boxCoordinates, gatoCoordinates);
         this.gatoBoxPair = new GatoBoxPair(boxCoordinates, gatoCoordinates, this.board, this.addPoint);
         this.gatoBoxPair.create(this.element);
 
         this.pointer.pointAt(this.gatoBoxPair.gato);
-        this.gatoBoxPair?.gato?.updatePosition(this.player.getCoords());
-        this.gatoBoxPair?.box?.updatePosition(this.player.getCoords());
         this.enemies.assignGato(this.gatoBoxPair.gato);
     }
 
@@ -115,20 +116,20 @@ export class Game {
 
         if(this.board.isObjectInRenderedTiles(playerCoords, this.gatoBoxPair?.gato?.getCoords())) {
             this.checkForGatoPickUps();
-            this.gatoBoxPair?.gato?.updatePosition(playerCoords);
+            this.gatoBoxPair.gato.updateCoords();
         }
 
-        if(this.board.isObjectInRenderedTiles(playerCoords, this.gatoBoxPair?.box?.getCoords())) {
-            this.gatoBoxPair?.box?.updatePosition(playerCoords);
-        }
+        // if(this.board.isObjectInRenderedTiles(playerCoords, this.gatoBoxPair?.box?.getCoords())) {
+        //     this.gatoBoxPair?.box?.updatePosition(playerCoords);
+        // }
         this.gatoBoxPair.checkForGatoInABox();
     }
 
     private updatePointer(playerCoords: Coordinates, playerSizes: Sizes) {
-        if(!isElementVisible(this.pointer.getTarget()?.element)) this.pointer.show();
-        else this.pointer.hide();
+        // if(!isElementVisible(this.pointer.getTarget())) this.pointer.show();
+        // else this.pointer.hide();
         
-        this.pointer.updatePointing(playerCoords, playerSizes);
+        this.pointer.updatePointing(playerCoords);
     }
 
     /* .................................. */
@@ -137,9 +138,8 @@ export class Game {
 
     public start() {
         this.newBoxGatoPair();
-        this.gatoBoxPair?.gato?.updatePosition(this.player.getCoords());
-        this.enemies.addEnemy(new Raven(this.element, this.board));
-        this.enemies.enterDisengageMode();
+        // this.enemies.addEnemy(new Raven(this.element, this.board));
+        // this.enemies.enterDisengageMode();
     }
 
     protected addPoint() {
@@ -172,6 +172,7 @@ export class Game {
         this.updatePointer(playerCoords, playerSizes);
         
         this.board.updateBoard(this.playerEnteredNewTile);
+        this.canvasDisplay.update(this.player, this.gatoBoxPair);
         
         const enemyWithGato = this.enemies.updatePositions();
         if(enemyWithGato) this.pointer.pointAt(enemyWithGato);

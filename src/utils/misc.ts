@@ -47,3 +47,6 @@ export function isInViewport(element: HTMLElement) {
         rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
 }
+
+export const safeObjectKeys = (obj: object) => Object.keys(obj || {});
+export const safeObjectValues = (obj: object) => Object.values(obj || {});

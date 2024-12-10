@@ -1,26 +1,24 @@
 import SimplexNoise from 'simplex-noise';
-import { BOARD_TILE_HEIGHT, BOARD_TILE_WIDTH, MAX_HEIGHT_CLOUDS, MAX_RENDER_DISTANCE, MIN_HEIGHT_CLOUDS, TILES_TO_NEW_GATO_HORIZONTAL, TILES_TO_NEW_GATO_VERTICAL } from "../../config";
-import { Coordinates, } from "../../types/common.types";
+import { BOARD_TILE_HEIGHT, BOARD_TILE_WIDTH, GATO, MAX_HEIGHT_CLOUDS, MAX_RENDER_DISTANCE, MIN_HEIGHT_CLOUDS } from "../../config";
+import { Coordinates, Sizes, } from "../../types/common.types";
 import { filterObject, signDependantFloor } from "../../utils/misc";
 import { randomCoords } from "../../utils/positioning.js";
-import Cloud from "./Cloud";
+import Obstacle from "./Obstacle.js";
 import { DirectionValues, Obstacles } from '../../types/board.types.js';
-import { Grid } from 'fast-astar';
+import Player from '../game/Player.js';
 
 export default class Board {
     private noise: SimplexNoise;
-    private tileSize: DirectionValues;
+    private tileSize: Sizes;
     private viewRadius: DirectionValues;
     private obstacles: Obstacles;
-    private container: HTMLElement;
     private lastUpdateTileCoords: Coordinates;
     public getPlayerCoords: () => Coordinates;
 
-    constructor(seed: number, container: HTMLElement, getPlayerCoords: () => Coordinates) {
+    constructor(seed: number, player: Player) {
         this.noise = new SimplexNoise(seed);
         this.obstacles = {};
-        this.container = container
-        this.getPlayerCoords = getPlayerCoords;
+        this.getPlayerCoords = () => player.getCoords();
 
         this.getTileCoords = this.getTileCoords.bind(this);
 
@@ -30,8 +28,8 @@ export default class Board {
 
     private setDimensions() {
         this.tileSize = {
-            horizontal: BOARD_TILE_WIDTH,
-            vertical: BOARD_TILE_HEIGHT,
+            width: BOARD_TILE_WIDTH,
+            height: BOARD_TILE_HEIGHT,
         } ;
         this.viewRadius = {
             horizontal: Math.min(Math.ceil(window.innerWidth / BOARD_TILE_WIDTH), MAX_RENDER_DISTANCE),
@@ -85,7 +83,7 @@ export default class Board {
         if (id in this.obstacles) return this.obstacles[id];
 
         if (!this.isObstacle(tileCoordinates)) return null;
-        this.obstacles[id] = new Cloud(tileCoordinates, this.container);
+        this.obstacles[id] = new Obstacle(tileCoordinates, this.tileSize);
     }
 
     private generateObstacles(currentTile: Coordinates) {
@@ -109,20 +107,17 @@ export default class Board {
             currentTile.y - this.viewRadius.vertical,
             currentTile.y + this.viewRadius.vertical,
         ];
+        
 
-        const isInView = (obstacle: Cloud) =>
-            obstacle.tileCoordinates.x >= minH && obstacle.tileCoordinates.x <= maxH &&
-            obstacle.tileCoordinates.y >= minV && obstacle.tileCoordinates.y <= maxV;
+        const isInView = (tileCoords: Coordinates) =>
+            tileCoords.x >= minH && tileCoords.x <= maxH &&
+            tileCoords.y >= minV && tileCoords.y <= maxV;
 
-        this.obstacles = filterObject(this.obstacles, (obstacle: Cloud) => {
-            if (isInView(obstacle)) return true;
-
-            obstacle.element.remove();
-        });
+        this.obstacles = filterObject(this.obstacles, (obstacle: Obstacle) => isInView(obstacle.getTileCoords()));
     }
 
     public getTileForGato(centerTile: Coordinates = this.getCurrentTileCoords()): Coordinates {
-        const tileCoordinates = randomCoords(centerTile, TILES_TO_NEW_GATO_HORIZONTAL, TILES_TO_NEW_GATO_VERTICAL);
+        const tileCoordinates = randomCoords(centerTile, GATO.SPAWN_DISTANCE_HORIZONTAL, GATO.SPAWN_DISTANCE_VERTICAL);
         tileCoordinates.y = tileCoordinates.y;
 
         let [x, y, dx, dy] = [0, 0, 0, -1];
@@ -142,23 +137,17 @@ export default class Board {
         return tileCoordinates;
     }
 
-    private updateObstaclesPositions() {
-        for (const obstacle of Object.values(this.obstacles)) {
-            obstacle.updatePosition(this.getCoordsFromTile(obstacle.tileCoordinates), this.getPlayerCoords());
-        }
-    }
-
     public getTileCoords(coordinates: Coordinates) {
         return {
-            x: signDependantFloor(coordinates.x / this.tileSize.horizontal),
-            y: signDependantFloor(coordinates.y / this.tileSize.vertical),
+            x: signDependantFloor(coordinates.x / this.tileSize.width),
+            y: signDependantFloor(coordinates.y / this.tileSize.height),
         }
     }
 
     public getCoordsFromTile(tileCoordinates: Coordinates) {
         return {
-            x: tileCoordinates.x * this.tileSize.horizontal,
-            y: tileCoordinates.y * this.tileSize.vertical,
+            x: tileCoordinates.x * this.tileSize.width,
+            y: tileCoordinates.y * this.tileSize.height,
         }
     }
 
@@ -172,7 +161,6 @@ export default class Board {
             this.pruneOffViewObstacles(currentTile);
             enteredNewTileCallback(this.lastUpdateTileCoords, currentTile);
         }
-        this.updateObstaclesPositions();
 
         this.lastUpdateTileCoords = currentTile;
     }

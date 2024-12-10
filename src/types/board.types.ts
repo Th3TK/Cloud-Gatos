@@ -1,4 +1,4 @@
-import Cloud from "../classes/environment/Cloud";
+import Cloud from "../classes/environment/Obstacle";
 
 export interface DirectionValues {
     horizontal: number,

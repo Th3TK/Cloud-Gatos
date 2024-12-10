@@ -1,40 +1,34 @@
-import { Coordinates, Movement, Sizes } from "../../types/common.types";
-import { getPos } from "../../utils/positioning";
+import { Coordinates, Movement, Rect, Sizes } from "../../types/common.types";
+import { getPos, rectFromCoordsAndSizes } from "../../utils/positioning";
 import Board from "../environment/Board";
 import CollisionHandler from "./CollisionHandler";
 
 export default class Entity {
-    element: HTMLElement | null;
     protected coordinates: Coordinates;
+    protected sizes: Sizes;
     protected collisionHandler: CollisionHandler | null = null;
 
-    constructor(element: HTMLElement | null, coordinates: Coordinates = {x: NaN, y: NaN}) {
-        this.element = element;
+    constructor(coordinates: Coordinates, sizes: Sizes) {
         this.coordinates = coordinates;
+        this.sizes = sizes;
     }
 
     public getCoords = () : Coordinates => this.coordinates;
-
-    public getSizes = () : Sizes => this.element ? {width: this.element.offsetWidth, height: this.element.offsetHeight} : {width: NaN, height: NaN};
+    public setCoords = (coords: Coordinates) => this.coordinates = coords;
+    public getSizes = () : Sizes => this.sizes;
+    public getRect = () : Rect => rectFromCoordsAndSizes(this.coordinates, this.sizes);
 
     public addCollisionHandler (board: Board) {
-        this.collisionHandler = new CollisionHandler(this.getCoords, board.getTileCoords, board.getObstacles);
+        this.collisionHandler = new CollisionHandler(this, board);
     }
 
-    public updatePosition(playerCoords: Coordinates) {
-        if (!this.element) return;
-
-        const position = getPos(this.coordinates, playerCoords, this.element.offsetWidth, this.element.offsetHeight);
-
-        this.element.style.left = `${position.x}px`;
-        this.element.style.top = `${position.y}px`;
-    }
 
     public move(movement: Movement) {
-        let handledMovement = movement;
-        if(this.element && this.collisionHandler) handledMovement = this.collisionHandler?.handleCollisions(this.element, movement) ?? handledMovement;
+        let handledMovement = this.collisionHandler?.handleCollisions(movement) ?? movement;
         
         this.coordinates.x += handledMovement.x;
         this.coordinates.y += handledMovement.y;
+
+        console.log(this.coordinates)
     }
 }

@@ -2,12 +2,14 @@ import { getPointerRadius } from "../../config";
 import { Coordinates, Sizes } from "../../types/common.types";
 import Entity from "../core/Entity";
 
-export default class Pointer extends Entity {
+export default class Pointer {
+    private element: HTMLElement;
+    private coordinates: Coordinates;
     private target: Entity | null = null;
     private hidden: boolean = false;
 
-    constructor(element: HTMLElement | null) {
-        super(element, undefined);
+    constructor(element: HTMLElement) {
+        this.element = element;
     }
 
     public isHidden = () => this.hidden;
@@ -28,7 +30,7 @@ export default class Pointer extends Entity {
         this.target = target;
     }
 
-    public calculateCoordsAndAngle(playerCoords: Coordinates, playerSizes: Sizes) {
+    public updatePointing(playerCoords: Coordinates) {
         if (!this.target) return;
         
         const targetCoords = this.target.getCoords();
@@ -43,8 +45,4 @@ export default class Pointer extends Entity {
         this.coordinates = { x, y };
     }
 
-    public updatePointing(playerCoords: Coordinates, playerSizes: Sizes): void {
-        this.calculateCoordsAndAngle(playerCoords, playerSizes);
-        this.updatePosition(playerCoords);
-    }
 }

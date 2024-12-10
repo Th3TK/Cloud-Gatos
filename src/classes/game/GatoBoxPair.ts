@@ -16,16 +16,8 @@ export default class GatoBoxPair {
     }
 
     public create(container: HTMLElement) {
-        this.box.createBox(container);
-        this.gato.createGato(container);
-
         this.box.move({x: 0, y: -this.box.getSizes().height / 2});
         this.gato.move({x: 0, y: -this.gato.getSizes().height / 2});
-    }
-
-    public remove() {
-        this.gato.element?.remove();
-        this.box.element?.remove();
     }
 
     public checkForGatoInABox() {
