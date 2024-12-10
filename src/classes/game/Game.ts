@@ -170,9 +170,9 @@ export default class Game {
         
         if(this.checkIfGameLost()) this.gameLost();
 
-        const currentBoardTile = this.board.getCurrentTileCoords();
-        const currentPlayerTile = this.board.getTileCoords(playerCoords);
-        this.player.element.innerText = 
-        `${currentPlayerTile.x} ${currentPlayerTile.y}\n${currentBoardTile.x} ${currentBoardTile.y}\n${playerCoords.x} ${playerCoords.y}`
+        // const currentBoardTile = this.board.getCurrentTileCoords();
+        // const currentPlayerTile = this.board.getTileCoords(playerCoords);
+        // this.player.element.innerText = 
+        // `${currentPlayerTile.x} ${currentPlayerTile.y}\n${currentBoardTile.x} ${currentBoardTile.y}\n${playerCoords.x} ${playerCoords.y}`
     } 
 }

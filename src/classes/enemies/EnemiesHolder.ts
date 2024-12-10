@@ -195,16 +195,12 @@ export default class EnemiesHolder {
         const playerCoords = this.player.getCoords();
         const playerSizes = this.player.getSizes();
 
-        console.log(enemyCoords.x < playerCoords.x )
-
         enemy.setCoords({
             x: randomChoice([-window.innerWidth, window.innerWidth]), 
             y: playerCoords.y
         })
 
         while(this.board.isObstacle(this.board.getTileCoords(enemy.getCoords()))) enemy.move({x: 0, y: -1});
-
-        console.log(enemy.getCoords());
     }
 
     private isEnemyOutOfView = (enemy: Enemy) => straightLineDistance(this.player.getCoords(), enemy.getCoords()) > GAME.BOARD_MAX_RENDER_DISTANCE * this.board.getTileSize().width;
@@ -212,6 +208,7 @@ export default class EnemiesHolder {
     // returns the enemy that stole the gato
     public updateEnemies = () => this.enemies.find(enemy => {
         console.log(enemy.getCoords());
+        if(this.mode === 'disengage' && enemy.isHidden()) return;
         if(this.mode === 'disengage' && this.isEnemyOutOfView(enemy)) enemy.hide();
         if(this.mode !== 'disengage' && enemy.isHidden()) this.spawn(enemy);
 

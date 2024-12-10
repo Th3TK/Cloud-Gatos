@@ -9,7 +9,9 @@ body,
 main {
     margin: 0;
     overflow: hidden;
-    background-color: #81caed;
+    background-image: url('/assets/background1.png');
+    background-size: cover;
+    background-position-y: 30%;
 }
 
 canvas#game-canvas {
