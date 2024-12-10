@@ -1,4 +1,4 @@
-import {  PLAYER_ACCELERATION, PLAYER_MAX_HORIZONTAL_VELOCITY, PLAYER_MAX_VERTICAL_VELOCITY, UPDATES_PER_SECOND, } from "../../config";
+import { GAME, PLAYER } from "../../config/_config";
 import { Pressed } from "../../types/common.types";
 import { clampEqual } from "../../utils/misc";
 import { Game } from "./Game";
@@ -54,16 +54,16 @@ export default class MovementHandler {
         let vertical = this.verticalVelocity;
 
         if(this.pressed.right || this.pressed.left ) {
-            horizontal += this.pressed.right ? PLAYER_ACCELERATION : -PLAYER_ACCELERATION;
-            horizontal += !this.pressed.left ? PLAYER_ACCELERATION : -PLAYER_ACCELERATION;
-            horizontal = clampEqual(horizontal, PLAYER_MAX_HORIZONTAL_VELOCITY);
+            horizontal += this.pressed.right ? PLAYER.ACCELERATION : -PLAYER.ACCELERATION;
+            horizontal += !this.pressed.left ? PLAYER.ACCELERATION : -PLAYER.ACCELERATION;
+            horizontal = clampEqual(horizontal, PLAYER.MAX_VELOCITY.horizontal);
         }
         else horizontal = 0;
 
         if(this.pressed.down || this.pressed.up) {
-            vertical += this.pressed.down ? PLAYER_ACCELERATION : -PLAYER_ACCELERATION;
-            vertical += !this.pressed.up  ? PLAYER_ACCELERATION : -PLAYER_ACCELERATION;
-            vertical = clampEqual(vertical, PLAYER_MAX_VERTICAL_VELOCITY);
+            vertical += this.pressed.down ? PLAYER.ACCELERATION : -PLAYER.ACCELERATION;
+            vertical += !this.pressed.up  ? PLAYER.ACCELERATION : -PLAYER.ACCELERATION;
+            vertical = clampEqual(vertical, PLAYER.MAX_VELOCITY.vertical);
         }
         else vertical = 0;
         
@@ -83,7 +83,7 @@ export default class MovementHandler {
     public start() {
         window.addEventListener('blur', this.clearMovement);
 
-        this.updateInterval = setInterval(this.updateMovement, 1000 / UPDATES_PER_SECOND);
+        this.updateInterval = setInterval(this.updateMovement, 1000 / GAME.UPDATES_PER_SECOND);
         this.game.tick({x: 1, y: 1});
     }
 

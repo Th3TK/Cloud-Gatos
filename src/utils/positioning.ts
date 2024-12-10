@@ -1,27 +1,18 @@
-import { MAX_HEIGHT_CLOUDS, MIN_HEIGHT_CLOUDS } from "../config";
-import { Coordinates, MinMax, Sizes } from "../types/common.types.js"
+import { BOARD } from "../config/_config.ts";
+import { Rectangle } from "../types/canvas.types.ts";
+import { Coordinates, MinMax, Rect, Sizes } from "../types/common.types.js"
 import { randomSign, randomNumber } from "./misc.ts"
 
 export const coordsToPair = (coordinates: Coordinates) : [x: number, y: number] => [coordinates.x, coordinates.y];
 
 export const pairToCoords = (pair: [x: number, y: number]) : Coordinates => ({x: pair?.[0] || NaN, y: pair?.[1] || NaN});
 
-export const getPos = (
-    coords: Coordinates, 
-    playerCoordinates: Coordinates, 
-    elementWidth: number, 
-    elementHeight: number | undefined = undefined
-) : Coordinates => ({
-    x: coords.x - playerCoordinates.x + window.innerWidth / 2 - elementWidth / 2,
-    y: coords.y - playerCoordinates.y + window.innerHeight / 2 - (elementHeight ?? elementWidth) / 2,
-})
-
 export const randomCoords = (center: Coordinates, horizontal: MinMax, vertical: MinMax) => {
     let x = center.x + randomSign(randomNumber(horizontal.min, horizontal.max));
     let y = center.y + randomSign(randomNumber(vertical.min, vertical.max));
 
-    if(y < -MAX_HEIGHT_CLOUDS) y = -MAX_HEIGHT_CLOUDS;
-    if(y > -MIN_HEIGHT_CLOUDS) y = -MIN_HEIGHT_CLOUDS;
+    if(y < -BOARD.MAX_HEIGHT_CLOUDS) y = -BOARD.MAX_HEIGHT_CLOUDS;
+    if(y > -BOARD.MIN_HEIGHT_CLOUDS) y = -BOARD.MIN_HEIGHT_CLOUDS;
 
     return {
         x: x,
@@ -41,6 +32,10 @@ export function isElementVisible(element: HTMLElement | null | undefined): boole
     );
 }
 
+export const isObjectVisibleOnCanvas = (rect: Rect, canvasCenterCoords: Coordinates) =>
+    rect.left > canvasCenterCoords.x - window.innerWidth / 2 && rect.right < canvasCenterCoords.x + window.innerWidth / 2 &&
+    rect.top > canvasCenterCoords.y - window.innerHeight / 2 && rect.bottom < canvasCenterCoords.y + window.innerHeight / 2;
+
 export const coordinatesEqual = (coords1: Coordinates, coords2: Coordinates) => 
     coords1.x === coords2.x && coords1.y === coords2.y;
 
@@ -57,16 +52,8 @@ export const reverseOffsetCoords = (coords: Coordinates, offset: Coordinates) =>
     y: coords.y + offset.y,
 })
 
-export const addCoords = (coords1: Coordinates, coords2: Coordinates) : Coordinates => ({
-    x: coords1.x + coords2.x,
-    y: coords1.y + coords2.y,
-})
-
-
-export const subtractCoords = (coords1: Coordinates, coords2: Coordinates) : Coordinates => ({
-    x: coords1.x - coords2.x,
-    y: coords1.y - coords2.y,
-})
+export const addCoords = reverseOffsetCoords;
+export const subtractCoords = offsetCoords;
 
 export const straightLineDistance = (coords1: Coordinates, coords2: Coordinates) : number => {
     const difference = subtractCoords(coords1, coords2);

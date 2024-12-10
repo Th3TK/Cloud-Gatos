@@ -1,15 +1,24 @@
-import { GATO } from "../../config";
 import { Coordinates } from "../../types/common.types";
 import Board from "../environment/Board";
 import Pickable from "../core/Pickable";
+import { GatoColor } from "../../types/gato.types";
+import TextureHandler from "../display/TextureHandler";
+import GATO from "../../config/gato.config";
 
 export default class Gato extends Pickable {
+    private color: GatoColor;
 
-    constructor(coordinates: Coordinates, board: Board){
+    constructor(coordinates: Coordinates, board: Board, color: GatoColor){
         super(coordinates, GATO.SIZES, GATO.ACCELERATION, GATO.MAX_SPEED);
-
+        this.color = color;
+                
+        this.addTextureHandler(GATO.TEXTURE_KEYS, this.chooseTexture);
         this.addCollisionHandler(board);
     }
+
+    private chooseTexture = () => `gato_${this.color}_${this.isPicked() ? 'picked' : 'sitting'}_${this.getFacing()}`;
+
+    public getColor = () => this.color;
 
     public updateCoords() {
         if(!this.isPicked()) return this.calculateFalling();
@@ -23,7 +32,7 @@ export default class Gato extends Pickable {
 
         this.setCoords({
             x: carrierCoords.x + (carrierSizes.width - sizes.width) / 2,
-            y: carrierCoords.y + (carrierSizes.height + sizes.height) / 2, 
+            y: carrierCoords.y + (carrierSizes.height + sizes.height) / 2 - 8, 
         })
     }
 }

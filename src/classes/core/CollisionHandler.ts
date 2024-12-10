@@ -1,3 +1,4 @@
+import BOARD from "../../config/board.config";
 import { Movement, Rect } from "../../types/common.types";
 import { signDependantFloor } from "../../utils/misc";
 import { rectFromCoordsAndSizes } from "../../utils/positioning";
@@ -33,24 +34,27 @@ export default class CollisionHandler {
         const parentRect = rectFromCoordsAndSizes(parentCoords, parentSizes);
         const currentParentTile = this.board.getTileCoords(parentCoords);
 
-        const colliders = this.board.getObstacles();
 
         // check only the tiles around the tile the Entity is in
         for (let dx = currentParentTile.x - 2; dx <= currentParentTile.x + 2; dx++) {
             for (let dy = currentParentTile.y - 2; dy <= currentParentTile.y + 2; dy++) {
-                const id = `${dx}:::${dy}`;
-                if (!(id in colliders)) continue;
+                const tile = {x: dx, y: dy};
+                if (!this.board.isObstacle(tile)) continue;
                 
-                const colliderCoords = this.board.getCoordsFromTile(colliders[id].getTileCoords());
-                const colliderSizes = colliders[id].getSizes();
-                const colliderRect = rectFromCoordsAndSizes(colliderCoords, colliderSizes);
+                const colliderCoords = this.board.getCoordsFromTile(tile);
+                const colliderRect = rectFromCoordsAndSizes(colliderCoords, BOARD.TILE_SIZES);
                 
                 const overlaps = this.willOverlap(parentRect, colliderRect, movement);
 
                 // calculate ideal velocity for perfect collision (without any gap in between)
-                if (overlaps.horizontal) output.x = signDependantFloor(output.x > 0 ? Math.max(colliderRect.left - parentRect.right, 0) : Math.min(parentRect.right - colliderRect.left, 0));
-                if (overlaps.vertical) output.y = signDependantFloor(output.y > 0 ? Math.max(colliderRect.top - parentRect.bottom, 0) : Math.min(parentRect.bottom - colliderRect.top, 0));
-                
+                if (overlaps.horizontal) output.x = signDependantFloor(output.x > 0 ? 
+                    Math.max(colliderRect.left - parentRect.right, 0) : 
+                    Math.min(parentRect.right - colliderRect.left, 0)
+                );
+                if (overlaps.vertical) output.y = signDependantFloor(output.y > 0 ? 
+                    Math.max(colliderRect.top - parentRect.bottom, 0) : 
+                    Math.min(parentRect.bottom - colliderRect.top, 0)
+                );
                 if (!output.x && !output.y) return { x: 0, y: 0 };
             }
         }

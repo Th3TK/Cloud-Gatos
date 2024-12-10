@@ -1,11 +1,11 @@
 import SimplexNoise from 'simplex-noise';
-import { BOARD_TILE_HEIGHT, BOARD_TILE_WIDTH, GATO, MAX_HEIGHT_CLOUDS, MAX_RENDER_DISTANCE, MIN_HEIGHT_CLOUDS } from "../../config";
 import { Coordinates, Sizes, } from "../../types/common.types";
-import { filterObject, signDependantFloor } from "../../utils/misc";
+import { filterObject } from "../../utils/misc";
 import { randomCoords } from "../../utils/positioning.js";
 import Obstacle from "./Obstacle.js";
 import { DirectionValues, Obstacles } from '../../types/board.types.js';
 import Player from '../game/Player.js';
+import { BOARD, GAME, GATO } from '../../config/_config.js';
 
 export default class Board {
     private noise: SimplexNoise;
@@ -27,13 +27,10 @@ export default class Board {
     }
 
     private setDimensions() {
-        this.tileSize = {
-            width: BOARD_TILE_WIDTH,
-            height: BOARD_TILE_HEIGHT,
-        } ;
+        this.tileSize = BOARD.TILE_SIZES;
         this.viewRadius = {
-            horizontal: Math.min(Math.ceil(window.innerWidth / BOARD_TILE_WIDTH), MAX_RENDER_DISTANCE),
-            vertical: Math.min(Math.ceil(window.innerHeight / BOARD_TILE_HEIGHT), MAX_RENDER_DISTANCE)
+            horizontal: Math.min(Math.ceil(window.innerWidth / this.tileSize.width), GAME.BOARD_MAX_RENDER_DISTANCE),
+            vertical: Math.min(Math.ceil(window.innerHeight / this.tileSize.height), GAME.BOARD_MAX_RENDER_DISTANCE)
         } 
     }
 
@@ -68,7 +65,7 @@ export default class Board {
     }
 
     public isObstacle({ x, y }: Coordinates) {
-        if (y < -MAX_HEIGHT_CLOUDS || y > -MIN_HEIGHT_CLOUDS || (x === 0 && y === 0)) return 0;
+        if (y < -BOARD.MAX_HEIGHT_CLOUDS || y > -BOARD.MIN_HEIGHT_CLOUDS || (x === 0 && y === 0)) return 0;
 
         const value = this.noise.noise2D(x, y);
 
@@ -139,8 +136,8 @@ export default class Board {
 
     public getTileCoords(coordinates: Coordinates) {
         return {
-            x: signDependantFloor(coordinates.x / this.tileSize.width),
-            y: signDependantFloor(coordinates.y / this.tileSize.height),
+            x: Math.floor(coordinates.x / this.tileSize.width),
+            y: Math.floor(coordinates.y / this.tileSize.height),
         }
     }
 

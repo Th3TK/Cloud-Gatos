@@ -1,5 +1,16 @@
 import { Coordinates, ObjectAny, Sizes } from "../types/common.types";
 
+export const getPos = (
+    coords: Coordinates, 
+    playerCoordinates: Coordinates, 
+    elementWidth: number, 
+    elementHeight: number | undefined = undefined
+) : Coordinates => ({
+    x: coords.x - playerCoordinates.x + window.innerWidth / 2 - elementWidth / 2,
+    y: coords.y - playerCoordinates.y + window.innerHeight / 2 - (elementHeight ?? elementWidth) / 2,
+})
+
+
 export const filterObject = (obj: ObjectAny, predicate: (a: any) => boolean | undefined) =>
     Object.keys(obj)
         .filter(key => predicate(obj[key]))
@@ -11,11 +22,13 @@ export const signDependantFloor = (num: number) =>
 
 export const doRectanglesOverlap = (coords1: Coordinates, sizes1: Sizes, coords2: Coordinates, sizes2: Sizes) => 
     coords1.x < coords2.x + sizes2.width && coords1.x + sizes1.width > coords2.x &&
-    coords1.y < coords2.y + sizes2.height && coords1.y + sizes1.height > coords2.y;
+coords1.y < coords2.y + sizes2.height && coords1.y + sizes1.height > coords2.y;
 
 export const randomNumber = (min: number, max: number) : number => Math.floor(Math.random() * (max - min)) + min;
 
 export const randomSign = (num: number) => Math.random() < 0.5 ? num : -num;
+
+export const randomChoice = (items: any[]) : any => items[Math.floor(Math.random() * items.length)]
 
 export const clamp = (n: number, max: number, min: number) => Math.max(Math.min(n, Math.max(max, min)), Math.min(max, min));
 
@@ -50,3 +63,4 @@ export function isInViewport(element: HTMLElement) {
 
 export const safeObjectKeys = (obj: object) => Object.keys(obj || {});
 export const safeObjectValues = (obj: object) => Object.values(obj || {});
+export const safeObjectEntries = (obj: object) => Object.entries(obj || {});

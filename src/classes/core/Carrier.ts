@@ -1,5 +1,5 @@
-import { PICK_UP_COOLDOWN } from "../../config";
-import { Coordinates, Movement, Sizes } from "../../types/common.types";
+import { PICK_UP } from "../../config/_config";
+import { Coordinates, Sizes } from "../../types/common.types";
 import Entity from "./Entity";
 import Pickable from "./Pickable";
 
@@ -41,5 +41,5 @@ export default class Carrier extends Entity {
         this.clearPickable();
     }
 
-    private startCooldown = () => setTimeout(() => this.canPick = true, PICK_UP_COOLDOWN);
+    private startCooldown = () => setTimeout(() => this.canPick = true, PICK_UP.COOLDOWN);
 }

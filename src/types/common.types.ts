@@ -25,8 +25,8 @@ export interface Movement {
 }
 
 export interface MinMax {
-    min: number,
-    max: number,
+    min: number;
+    max: number;
 }
 
 export interface Pressed {
@@ -40,3 +40,5 @@ export interface Pressed {
 export interface ObjectAny {
     [key: string]: any;
 }
+
+export type CheckFunction = () => boolean;

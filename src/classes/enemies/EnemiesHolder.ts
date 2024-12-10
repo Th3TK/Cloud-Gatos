@@ -1,8 +1,9 @@
-import { PATHFINDING_GRID_RANGE } from "../../config";
+import BOARD from "../../config/board.config";
+import GAME from "../../config/game.config";
 import { Coordinates, Direction } from "../../types/common.types";
 import { Enemy, EnemyModes, EnemyTargets } from "../../types/enemies.types";
-import { clamp, isInViewport, matrixFrom } from "../../utils/misc";
-import { reverseOffsetCoords, subtractCoords } from "../../utils/positioning";
+import { clamp, isInViewport, matrixFrom, randomChoice } from "../../utils/misc";
+import { coordinatesEqual, offsetCoords, reverseOffsetCoords, straightLineDistance, subtractCoords } from "../../utils/positioning";
 import Board from "../environment/Board";
 import Gato from "../game/Gato";
 import Player from "../game/Player";
@@ -21,7 +22,7 @@ export default class EnemiesHolder {
         this.player = player;
         this.gato = gato;
         this.board = board;
-        this.pathfindingMatrixSize = PATHFINDING_GRID_RANGE * 2 + 1;
+        this.pathfindingMatrixSize = GAME.PATHFINDING_GRID_RANGE * 2 + 1;
 
         this.initializePathfindingMatrix();
         this.shiftPathFindingMatrix = this.shiftPathFindingMatrix.bind(this);
@@ -31,8 +32,8 @@ export default class EnemiesHolder {
         const currentPlayerTile = this.board.getCurrentTileCoords();
 
         const getMatrixCoordinates = (offsetX: number = 0, offsetY: number = 0) => ({
-            x: offsetX + currentPlayerTile.x - PATHFINDING_GRID_RANGE,
-            y: offsetY + currentPlayerTile.y - PATHFINDING_GRID_RANGE,
+            x: offsetX + currentPlayerTile.x - GAME.PATHFINDING_GRID_RANGE,
+            y: offsetY + currentPlayerTile.y - GAME.PATHFINDING_GRID_RANGE,
         })
 
         this.pathfindingMatrixCornerCoords = getMatrixCoordinates();
@@ -124,6 +125,7 @@ export default class EnemiesHolder {
                 break;
         }
 
+        
     }
 
     /* .................................. */
@@ -157,13 +159,11 @@ export default class EnemiesHolder {
         
         // furthest point away from the player in the x direction:
         const escapeCoords = (enemy: Enemy) => {
-            const difference = subtractCoords(currentPlayerTile, this.board.getTileCoords(enemy.getCoords()));
-
             const x = playerToTheRight(enemy) ? 0 : this.pathfindingMatrixSize - 1;
-            const y = clamp(Math.floor(Math.abs(x / (difference.x || 1))) * difference.y, this.pathfindingMatrixSize - 1, 0);
-            const offset = { x: currentPlayerTile.x - PATHFINDING_GRID_RANGE, y: currentPlayerTile.y - PATHFINDING_GRID_RANGE};
-
+            const y = currentPlayerTile.y;
+            const offset = enemy.getOffset(currentPlayerTile);
             const tile = reverseOffsetCoords({x, y}, offset);
+
             while(this.board.isObstacle(tile)) tile.x += x > 0 ? -1 : 1;
             return tile;
         }
@@ -171,52 +171,53 @@ export default class EnemiesHolder {
         const targetGetters = {
             'disengage': (enemy: Enemy) => escapeCoords(enemy),
             'escape': (enemy: Enemy) => escapeCoords(enemy),
-            'attack': () => currentPlayerTile,
+            'attack': (enemy: Enemy) => this.board.getTileCoords(enemy.getTarget()!.getCoords()),
         }
 
         return targetGetters[this.mode](enemy);
     }
-
-    // boolean indicating if enemy is hidden
-    private updateVisibility = (enemy: Enemy) => {
-        if(this.mode !== 'disengage') {
-            if(enemy.isHidden()) enemy.show();
-            return true;
-        }
-
-        if(enemy.isHidden()) return false;
-        if(enemy.element && !isInViewport(enemy.element)) enemy.hide();
-        return !enemy.isHidden();
-    }
+    
 
     // true if successful gato steal 
     private tryStealingGato = (enemy: Enemy) => {
-        console.log(this.gato, this.mode)
         if(!this.gato || this.mode !== 'attack') return false;
         
         const pickedGato = enemy.tryPick(this.gato);
         if(pickedGato) this.enterEscapeMode();
         return pickedGato;
     }
-    
-    public runEnemyUpdate = () => {
-        if(this.mode !== 'attack') return;
-        this.enemies.forEach(enemy => {
-            enemy.pathfind(this.pathfindingMatrix, this.getTargetTileCoords(enemy)); 
-        });
+
+    private spawn(enemy: Enemy) {
+        enemy.show();
+        enemy.setPath([]);
+
+        const enemyCoords = enemy.getCoords();
+        const playerCoords = this.player.getCoords();
+        const playerSizes = this.player.getSizes();
+
+        console.log(enemyCoords.x < playerCoords.x )
+
+        enemy.setCoords({
+            x: randomChoice([-window.innerWidth, window.innerWidth]), 
+            y: playerCoords.y
+        })
+
+        while(this.board.isObstacle(this.board.getTileCoords(enemy.getCoords()))) enemy.move({x: 0, y: -1});
+
+        console.log(enemy.getCoords());
     }
+
+    private isEnemyOutOfView = (enemy: Enemy) => straightLineDistance(this.player.getCoords(), enemy.getCoords()) > GAME.BOARD_MAX_RENDER_DISTANCE * this.board.getTileSize().width;
 
     // returns the enemy that stole the gato
-    public updatePositions = () => {
-        return this.enemies.find(enemy => {
-            const shown = this.updateVisibility(enemy);
-            if(!shown) return;
+    public updateEnemies = () => this.enemies.find(enemy => {
+        console.log(enemy.getCoords());
+        if(this.mode === 'disengage' && this.isEnemyOutOfView(enemy)) enemy.hide();
+        if(this.mode !== 'disengage' && enemy.isHidden()) this.spawn(enemy);
 
-            const pathFinished = enemy.followPath();
-            enemy.updatePosition(this.player.getCoords());
-            if(pathFinished) enemy.pathfind(this.pathfindingMatrix, this.getTargetTileCoords(enemy));
+        enemy.pathfind(this.pathfindingMatrix, this.getTargetTileCoords(enemy));
+        enemy.followPath();
 
-            return this.tryStealingGato(enemy);
-        });
-    }
+        if(this.mode === 'attack') return this.tryStealingGato(enemy);
+    });
 }
