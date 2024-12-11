@@ -43,7 +43,5 @@ export default class Entity {
         
         this.coordinates.x += handledMovement.x;
         this.coordinates.y = clamp(this.coordinates.y + handledMovement.y, -GAME.ENTITY_MAX_Y, -GAME.ENTITY_MIN_Y);
-
-        console.log(this.getCoords())
     }
 }

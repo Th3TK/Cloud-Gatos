@@ -9,6 +9,7 @@ import Raven from "../enemies/Raven.js";
 import CanvasDisplay from "../display/CanvasDisplay.js";
 import { straightLineDistance } from "../../utils/positioning.js";
 import BackgroundPositioner from "../display/BackgroundPositioner.js";
+import { randomNumber } from "../../utils/misc.js";
 
 export default class Game {
     private pointCounter: HTMLElement;
@@ -66,8 +67,8 @@ export default class Game {
     private playerEnteredNewTile(last: Coordinates, current: Coordinates) {
         if(!last) return;
 
-        if(last.y !== current.y) this.enemies.shiftPathFindingMatrix(last.y > current.y ? 'up' : 'down');
-        if(last.x !== current.x) this.enemies.shiftPathFindingMatrix(last.x > current.x ? 'left' : 'right');
+        if(last.y !== current.y) this.enemies.shiftMatrix(last.y > current.y ? 'up' : 'down');
+        if(last.x !== current.x) this.enemies.shiftMatrix(last.x > current.x ? 'left' : 'right');
         
     }
 
@@ -86,8 +87,10 @@ export default class Game {
         const {boxCoordinates, gatoCoordinates} = this.getNewGatoBoxPairCoordinates();
         const tileSize = this.board.getTileSize();        
 
-        boxCoordinates.y += tileSize.height - BOX.SIZES.height;
-        gatoCoordinates.y += tileSize.height - GATO.SIZES.height;
+        boxCoordinates.y += tileSize.height - BOX.SIZES.height + 8;
+        gatoCoordinates.y += tileSize.height - GATO.SIZES.height + 8;
+        boxCoordinates.x += randomNumber(0, BOARD.TILE_SIZES.width - BOX.SIZES.width);
+        gatoCoordinates.x += randomNumber(0, BOARD.TILE_SIZES.width - GATO.SIZES.width);
         this.gatoBoxPair = new GatoBoxPair(boxCoordinates, gatoCoordinates, this.board, this.addPoint);
 
         this.pointer.pointAt(this.gatoBoxPair.gato);

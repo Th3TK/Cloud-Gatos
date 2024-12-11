@@ -1,11 +1,13 @@
 import SimplexNoise from 'simplex-noise';
 import { Coordinates, Sizes, } from "../../types/common.types";
-import { filterObject } from "../../utils/misc";
-import { randomCoords } from "../../utils/positioning.js";
+import { filterObject, matrixFrom } from "../../utils/misc";
+import { offsetCoords, randomCoords } from "../../utils/positioning.js";
 import Obstacle from "./Obstacle.js";
 import { DirectionValues, Obstacles } from '../../types/board.types.js';
 import Player from '../game/Player.js';
-import { BOARD, GAME, GATO } from '../../config/_config.js';
+import { ASTAR, BOARD, GAME, GATO } from '../../config/_config.js';
+import PathfindingMatrix from '../core/PathfindingMatrix.js';
+import { AStarFinder } from 'astar-typescript';
 
 export default class Board {
     private noise: SimplexNoise;
@@ -113,13 +115,30 @@ export default class Board {
         this.obstacles = filterObject(this.obstacles, (obstacle: Obstacle) => isInView(obstacle.getTileCoords()));
     }
 
+    private ensureTileIsReachable (startTile: Coordinates, endTile: Coordinates) : Boolean {
+        const range = Math.abs(startTile.x - endTile.x);
+        const pathfindingMatrix = new PathfindingMatrix(this, range * 2 + 1);
+        const finder = new AStarFinder({...ASTAR, grid: {matrix: pathfindingMatrix.getMatrix()}});
+
+        const offset = {x: endTile.x - range, y: endTile.y - range};
+        const start = offsetCoords(endTile, offset);
+        const goal = offsetCoords(startTile, offset);
+
+        try {
+            return !!finder.findPath(start, goal).length;
+        }
+        catch {
+            return false;
+        }
+    }
+
     public getTileForGato(centerTile: Coordinates = this.getCurrentTileCoords()): Coordinates {
-        const tileCoordinates = randomCoords(centerTile, GATO.SPAWN_DISTANCE_HORIZONTAL, GATO.SPAWN_DISTANCE_VERTICAL);
+        let tileCoordinates = randomCoords(centerTile, GATO.SPAWN_DISTANCE_HORIZONTAL, GATO.SPAWN_DISTANCE_VERTICAL);
         tileCoordinates.y = tileCoordinates.y;
 
         let [x, y, dx, dy] = [0, 0, 0, -1];
 
-        while (!this.isObstacle(tileCoordinates)) {
+        const next = () => {
             if ((x == y) || (x < 0 && x == -y) || (x > 0 && x == 1 - y)) {
                 [dx, dy] = [-dy, dx];
             }
@@ -128,8 +147,24 @@ export default class Board {
             tileCoordinates.x += dx;
             tileCoordinates.y += dy;
         }
+        
+        let found = false;
+        while(!found) {
+            // find an obstacle tile for the gato to sit on (searches in a snake around the tile)
+            while (!this.isObstacle(tileCoordinates)) next();
 
-        while(this.isObstacle(tileCoordinates)) tileCoordinates.y--;
+            console.log(tileCoordinates, x, y, dx, dy)
+
+            // then move up since we want the gato to sit on the obstacle, not inside
+            const tileCoordinatesCopy = structuredClone(tileCoordinates);
+            while(this.isObstacle(tileCoordinatesCopy)) tileCoordinatesCopy.y--;
+
+            if(this.ensureTileIsReachable(centerTile, tileCoordinatesCopy)) {
+                tileCoordinates = tileCoordinatesCopy;
+                found = true;
+            }
+            else next();
+        }
 
         return tileCoordinates;
     }

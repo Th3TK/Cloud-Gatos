@@ -29,13 +29,15 @@ export const indicePairInMatrix = (matrix: any[][], x: number, y: number) =>
 export const indicePairInMatrixOfSizes = (width: number, height: number, x: number, y: number) => 
     x >= 0 && y >= 0 && height > y && width > x;
 
-export const matrixFrom = (length: number, callback: (y: number, x: number) => any) => (
-    Array.from({length}, (_, y) => 
-        Array.from({length}, (_, x) => 
+export const matrixFrom = (rows: number, cols: number, callback: (y: number, x: number) => any) => (
+    Array.from({length: rows}, (_, y) => 
+        Array.from({length: cols}, (_, x) => 
             callback(y, x)
         )
     )
 );
+
+export const squareMatrixFrom = (length: number, callback: (y: number, x: number) => any) => matrixFrom(length, length, callback);
 
 export const matrixForEach = (matrix: any[][], callback: (e: any, y: number, x: number) => any) => 
     matrix.forEach((row, y) => row.forEach((e, x) => callback(e, y, x)));
