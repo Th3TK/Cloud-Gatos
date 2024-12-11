@@ -13,8 +13,8 @@ export default class Player extends Carrier {
     public move(movement: Movement): void {
         super.move(movement);
 
-        if(!this.element) return;
-        
+        if(!this.element || !movement.x) return;
+
         const movingRight = movement.x > 0;
         this.element.style.transform = `scaleX(${movingRight ? -1 : 1})`;
         if(this.pickable) this.pickable.setFacing(movingRight ? 'right' : 'left');  

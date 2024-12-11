@@ -22,7 +22,7 @@ export default class Raven extends Carrier {
         this.pathfind = this.pathfind.bind(this);
         this.startAttackCooldown = this.startAttackCooldown.bind(this);
 
-        this.addTextureHandler(RAVEN.TEXTURE_KEYS);
+        this.addTextureHandler();
         this.textureHandler!.addAnimation(RAVEN.TEXTURE_KEYS.map(key => ({textureKey: key, duration: RAVEN.ANIMATION_KEYFRAME_DURATION})));
         this.textureHandler!.startAnimation(true);
     }
@@ -105,7 +105,12 @@ export default class Raven extends Carrier {
         goal.y = clamp(goal.y, max, 0) || 1;
 
         if(this.board.isObstacle(toTile)) console.error(`Goal:\n${toTile}\n is an obstacle!`)
-        const path = astar.findPath(start, goal) as CoordinatesPair[];
+        let path = astar.findPath(start, goal) as CoordinatesPair[];
+
+        if(!path.length){ // if gets stuck on corner, try to unstuck
+            start.x += 1;
+            path = astar.findPath(start, goal) as CoordinatesPair[];
+        }
 
         this.preparePath(path);
     }

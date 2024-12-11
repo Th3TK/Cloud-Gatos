@@ -12,12 +12,12 @@ export default class Gato extends Pickable {
         super(coordinates, GATO.SIZES, GATO.ACCELERATION, GATO.MAX_SPEED);
         this.color = color;
                 
-        this.addTextureHandler(GATO.TEXTURE_KEYS, this.chooseTexture);
+        this.addTextureHandler(this.chooseTexture);
         this.addCollisionHandler(board);
     }
 
     private chooseTexture = () => {
-        if(this.getFacing() === 'right') this.textureHandler?.setFlippedHorizontally(true);
+        this.textureHandler?.setFlippedHorizontally(this.getFacing() === 'right');
         return `gato_${this.color}_${this.isPicked() ? 'picked' : 'sitting'}`
     };
 

@@ -1,7 +1,7 @@
 import { AnimationFrame } from "../../types/canvas.types";
+import Gato from "../game/Gato";
 
 export default class TextureHandler {
-    private textureKeys: string[] = []; 
     private chooseTexture?: () => string; 
     private animations: AnimationFrame[] = []; 
     private animationIndex: number = 0; 
@@ -12,8 +12,7 @@ export default class TextureHandler {
     private flippedHorizontally = false; 
     private looped: boolean = false;
 
-    constructor(textureKeys: string[], chooseTexture?: () => string) {
-        this.textureKeys = textureKeys;
+    constructor(chooseTexture?: () => string) {
         this.chooseTexture = chooseTexture;
     }
 
@@ -28,7 +27,8 @@ export default class TextureHandler {
         else textureKey = this.chooseTexture?.();
 
         if(!textureKey) return;
-        return `${textureKey}${this.flippedHorizontally ? '_flipped' : ''}`;  
+        if(textureKey === 'gato_black_picked' || textureKey === 'gato_orange_picked') console.log(this.isFlippedHorizontally())
+        return `${textureKey}${this.isFlippedHorizontally() ? '_flipped' : ''}`;  
     }
 
     public addAnimation(frames: AnimationFrame[]): void {
