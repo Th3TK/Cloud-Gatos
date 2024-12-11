@@ -2,8 +2,8 @@ import BOARD from "../../config/board.config";
 import GAME from "../../config/game.config";
 import { Coordinates, Direction } from "../../types/common.types";
 import { Enemy, EnemyModes, EnemyTargets } from "../../types/enemies.types";
-import { clamp, isInViewport, matrixFrom, randomChoice } from "../../utils/misc";
-import { coordinatesEqual, offsetCoords, reverseOffsetCoords, straightLineDistance, subtractCoords } from "../../utils/positioning";
+import { matrixFrom, randomChoice } from "../../utils/misc";
+import { reverseOffsetCoords, straightLineDistance } from "../../utils/positioning";
 import Board from "../environment/Board";
 import Gato from "../game/Gato";
 import Player from "../game/Player";
@@ -188,26 +188,33 @@ export default class EnemiesHolder {
     }
 
     private spawn(enemy: Enemy) {
-        enemy.show();
+        
         enemy.setPath([]);
 
         const enemyCoords = enemy.getCoords();
         const playerCoords = this.player.getCoords();
         const playerSizes = this.player.getSizes();
 
-        enemy.setCoords({
-            x: randomChoice([-window.innerWidth, window.innerWidth]), 
-            y: playerCoords.y
-        })
+        const spawnCoords = {
+            x: randomChoice([playerCoords.x - 2000, playerCoords.x + 2000]),
+            y: playerCoords.y,
+        }
 
-        while(this.board.isObstacle(this.board.getTileCoords(enemy.getCoords()))) enemy.move({x: 0, y: -1});
+        while(this.board.isObstacle(this.board.getTileCoords(spawnCoords))) 
+            spawnCoords.x += (spawnCoords.x > playerCoords.x ? BOARD.TILE_SIZES.width : -BOARD.TILE_SIZES.width);
+
+        enemy.setCoords(spawnCoords)
+
+        console.log(playerCoords, enemy.getCoords(), enemy.getPath());
+
+
+        enemy.show();
     }
 
     private isEnemyOutOfView = (enemy: Enemy) => straightLineDistance(this.player.getCoords(), enemy.getCoords()) > GAME.BOARD_MAX_RENDER_DISTANCE * this.board.getTileSize().width;
 
     // returns the enemy that stole the gato
     public updateEnemies = () => this.enemies.find(enemy => {
-        console.log(enemy.getCoords());
         if(this.mode === 'disengage' && enemy.isHidden()) return;
         if(this.mode === 'disengage' && this.isEnemyOutOfView(enemy)) enemy.hide();
         if(this.mode !== 'disengage' && enemy.isHidden()) this.spawn(enemy);

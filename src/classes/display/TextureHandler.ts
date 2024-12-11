@@ -22,11 +22,13 @@ export default class TextureHandler {
     public isFlippedHorizontally = () => this.flippedHorizontally;
 
     public getCurrentTextureKey(): string | undefined {
-        if (this.isAnimating && this.animations.length > 0) {
-            return this.getCurrentAnimationFrame();
-        }
+        let textureKey: string | undefined;
 
-        return this.chooseTexture?.();   
+        if (this.isAnimating && this.animations.length > 0) textureKey = this.getCurrentAnimationFrame();
+        else textureKey = this.chooseTexture?.();
+
+        if(!textureKey) return;
+        return `${textureKey}${this.flippedHorizontally ? '_flipped' : ''}`;  
     }
 
     public addAnimation(frames: AnimationFrame[]): void {

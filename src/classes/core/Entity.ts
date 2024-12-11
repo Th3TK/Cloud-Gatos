@@ -1,4 +1,6 @@
+import GAME from "../../config/game.config";
 import { Coordinates, Movement, Rect, Sizes } from "../../types/common.types";
+import { clamp } from "../../utils/misc";
 import { rectFromCoordsAndSizes } from "../../utils/positioning";
 import TextureHandler from "../display/TextureHandler";
 import Board from "../environment/Board";
@@ -40,6 +42,8 @@ export default class Entity {
         let handledMovement = this.collisionHandler?.handleCollisions(movement) ?? movement;
         
         this.coordinates.x += handledMovement.x;
-        this.coordinates.y += handledMovement.y;
+        this.coordinates.y = clamp(this.coordinates.y + handledMovement.y, -GAME.ENTITY_MAX_Y, -GAME.ENTITY_MIN_Y);
+
+        console.log(this.getCoords())
     }
 }

@@ -8,7 +8,7 @@ const BOARD = {
     HEIGHT_LIMIT_TILE: 55,  // limits upwards movement 
     MAX_HEIGHT_CLOUDS: 50,   
     MIN_HEIGHT_CLOUDS: 0,    
-    WATER_LEVEL_TILE: -5,    // water level
+    WATER_LEVEL_TILE: -4,    // water level
 }
 
 export default BOARD;

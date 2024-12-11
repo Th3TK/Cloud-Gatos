@@ -12,6 +12,7 @@ export default class TextureBank {
         safeObjectEntries(textures).forEach(([key, path]) => 
             this.setTexture(key, path)
         );
+        console.log(this.imageElements);
     }
 
     public setTexture = (key: string, path: string) => {

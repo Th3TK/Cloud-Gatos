@@ -1,11 +1,21 @@
 import { BOARD } from "../config/_config.ts";
-import { Rectangle } from "../types/canvas.types.ts";
-import { Coordinates, MinMax, Rect, Sizes } from "../types/common.types.js"
-import { randomSign, randomNumber } from "./misc.ts"
+import { Coordinates, MinMax, Rect, Sizes } from "../types/common.types.js";
+import { randomSign, randomNumber } from "./misc.ts";
 
 export const coordsToPair = (coordinates: Coordinates) : [x: number, y: number] => [coordinates.x, coordinates.y];
 
 export const pairToCoords = (pair: [x: number, y: number]) : Coordinates => ({x: pair?.[0] || NaN, y: pair?.[1] || NaN});
+
+export const getPos = (
+    coords: Coordinates, 
+    playerCoordinates: Coordinates, 
+    elementWidth: number, 
+    elementHeight: number | undefined = undefined
+) : Coordinates => ({
+    x: coords.x - playerCoordinates.x + window.innerWidth / 2 - elementWidth / 2,
+    y: coords.y - playerCoordinates.y + window.innerHeight / 2 - (elementHeight ?? elementWidth) / 2,
+})
+
 
 export const randomCoords = (center: Coordinates, horizontal: MinMax, vertical: MinMax) => {
     let x = center.x + randomSign(randomNumber(horizontal.min, horizontal.max));

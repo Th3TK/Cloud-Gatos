@@ -122,6 +122,8 @@ export default class Raven extends Carrier {
         const x = clampEqual(nextTileCoords.x - currentCoords.x + (tileSizes.width - ravenSizes.width) / 2, speed);
         const y = clampEqual(nextTileCoords.y - currentCoords.y + (tileSizes.height - ravenSizes.height) / 2, speed);
 
+        console.log(x)
+
         this.move({x, y});
         if(x) this.textureHandler?.setFlippedHorizontally(x > 0)
         

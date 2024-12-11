@@ -8,12 +8,14 @@ import EnemiesHolder from "../enemies/EnemiesHolder.js";
 import Raven from "../enemies/Raven.js";
 import CanvasDisplay from "../display/CanvasDisplay.js";
 import { straightLineDistance } from "../../utils/positioning.js";
+import BackgroundPositioner from "../display/BackgroundPositioner.js";
 
 export default class Game {
     private pointCounter: HTMLElement;
     private player: Player;
     private board: Board;
     private canvasDisplay: CanvasDisplay;
+    private background: BackgroundPositioner;
     private gatoBoxPair: GatoBoxPair | null = null;
     private pointer: Pointer;
     private enemies: EnemiesHolder;
@@ -30,11 +32,12 @@ export default class Game {
         this.pointCounter = pointCounter;
 
         this.player = new Player(playerElement);
-        this.board = new Board(seed, this.player);
         this.pointer = new Pointer(pointerElement);
-        this.canvasDisplay = new CanvasDisplay(gameCanvas, this.board);
+        this.board = new Board(seed, this.player);
         this.enemies = new EnemiesHolder(this.board, this.player, this.gatoBoxPair?.gato);
         this.player.addCollisionHandler(this.board);
+        this.background = new BackgroundPositioner(this.board);
+        this.canvasDisplay = new CanvasDisplay(gameCanvas, this.board);
         
         this.addPoint = this.addPoint.bind(this);
         this.playerRelease = this.playerRelease.bind(this);
@@ -167,6 +170,7 @@ export default class Game {
         if(enemyWithGato) this.pointer.pointAt(enemyWithGato);
         
         this.canvasDisplay.update(this.player, this.enemies, this.gatoBoxPair);
+        this.background.updatePosition(playerCoords);
         
         if(this.checkIfGameLost()) this.gameLost();
 

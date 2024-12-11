@@ -1,7 +1,6 @@
 import { POINTER } from "../../config/_config";
 import { Coordinates } from "../../types/common.types";
-import { getPos } from "../../utils/misc";
-import { isObjectVisibleOnCanvas } from "../../utils/positioning";
+import { getPos, isObjectVisibleOnCanvas } from "../../utils/positioning";
 import Entity from "../core/Entity";
 import Raven from "../enemies/Raven";
 import Box from "./Box";

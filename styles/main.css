@@ -9,14 +9,13 @@ body,
 main {
     margin: 0;
     overflow: hidden;
-    background-image: url('/assets/background1.png');
+    background-image: url('/assets/background/background3.png');
     background-size: cover;
-    background-position-y: 30%;
 }
 
 canvas#game-canvas {
     position: absolute;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     z-index: 100;
 }
