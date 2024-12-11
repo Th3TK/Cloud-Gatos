@@ -147,58 +147,11 @@ export default class CanvasDisplay {
         
         this.drawVignette(playerCoords, gato.getCarrier()?.getCoords()!);
     }
-    
-    /* .................................. */
-    /*             DEBUGGING              */
-    /* .................................. */
-
-    private drawPath(enemy: Raven, offset: Coordinates) {
-        if(!enemy.getPath()) return;
-        this.ctx.strokeStyle = "red"; // Line color for the path
-        this.ctx.lineWidth = 3;
-        this.ctx.beginPath();
-    
-        enemy.getPath()?.forEach((step, index) => {
-            const coords = enemy.pathElementToCoords(step);
-            const canvasCoords = {
-                x: coords.x - offset.x + window.innerWidth / 2,
-                y: coords.y - offset.y + window.innerHeight / 2,
-            };
-    
-            if (index === 0) {
-                // Move to the starting point
-                this.ctx.moveTo(canvasCoords.x, canvasCoords.y);
-            } else {
-                // Draw a line to the next point
-                this.ctx.lineTo(canvasCoords.x, canvasCoords.y);
-            }
-        });
-    
-        this.ctx.stroke();
-        this.ctx.closePath();
-
-        enemy.getPath()?.forEach((step, index) => {
-            const coords = enemy.pathElementToCoords(step);
-            const canvasCoords = {
-                x: coords.x - offset.x + window.innerWidth / 2,
-                y: coords.y - offset.y + window.innerHeight / 2,
-            };
-    
-            // Draw a small circle at the step
-            this.ctx.beginPath();
-            this.ctx.arc(canvasCoords.x, canvasCoords.y, 5, 0, 2 * Math.PI);
-            this.ctx.fillStyle = "darkred"; // Color for the path points
-            this.ctx.fill();
-            this.ctx.closePath();
-        });
-    }    
 
     update(player: Player, enemies: EnemiesHolder, gatoBoxPair?: GatoBoxPair | null) {
         this.clearCanvas();
         
         const playerCoords = player.getCoords()
-        
-        enemies.getEnemies().forEach(enemy => this.drawPath(enemy, playerCoords)) // ? debugging
         
         this.updateObstacles(playerCoords);
         if(gatoBoxPair) this.updateGatoBoxPair(gatoBoxPair, playerCoords);

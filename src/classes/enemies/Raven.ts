@@ -7,9 +7,8 @@ import { clamp, clampEqual } from "../../utils/misc";
 import { AStarFinder } from 'astar-typescript';
 import { RAVEN, GAME, ASTAR } from '../../config/_config';
 
-
 export default class Raven extends Carrier {
-    private path: undefined | CoordinatesPair[];
+    private path: undefined | Coordinates[];
     private board: Board;
     private target: EnemyTargets;
     private canAttack = true;
@@ -61,7 +60,7 @@ export default class Raven extends Carrier {
 
     public getPath = () => this.path;
 
-    public setPath = (path: CoordinatesPair[]) => this.path = path;
+    public setPath = (path: Coordinates[]) => this.path = path;
 
     private attack() {
         if(!this.target) return;
@@ -73,6 +72,23 @@ export default class Raven extends Carrier {
             x: clampEqual(targetCoords.x - currentCoords.x, RAVEN.SPEED_STEAL),
             y: clampEqual(targetCoords.y - currentCoords.y, RAVEN.SPEED_STEAL),
         })
+    }
+
+    private preparePath(path: CoordinatesPair[]) {
+        path.shift();
+
+        const currentCoords = this.getCoords();
+        const ravenSizes = this.getSizes();
+        const tileSizes = this.board.getTileSize();
+        
+        const pathOfCoords = path
+            .map(move => this.pathElementToCoords(move))
+            .map(({x, y}) => ({
+                x: x - currentCoords.x + (tileSizes.width - ravenSizes.width) / 2,
+                y: y - currentCoords.y + (tileSizes.height - ravenSizes.height) / 2
+            }));
+
+        this.path = pathOfCoords;
     }
 
     public pathfind(matrix: number[][], toTile: Coordinates) {
@@ -88,10 +104,10 @@ export default class Raven extends Carrier {
         goal.x = clamp(goal.y, max, 0) || 1;
         goal.y = clamp(goal.y, max, 0) || 1;
 
-
         if(this.board.isObstacle(toTile)) console.error(`Goal:\n${toTile}\n is an obstacle!`)
-        this.path = astar.findPath(start, goal) as CoordinatesPair[];
-        this.path.shift();
+        const path = astar.findPath(start, goal) as CoordinatesPair[];
+
+        this.preparePath(path);
     }
 
     public pathElementToCoords = (move: CoordinatesPair) => {
@@ -112,22 +128,18 @@ export default class Raven extends Carrier {
 
         if(!this.path?.length) return true;
         
-        const ravenSizes = this.getSizes();
-        const tileSizes = this.board.getTileSize();
-        const nextTileCoords = this.pathElementToCoords(this.path[0]);
-        const currentCoords = this.getCoords();
+        const nextMove = this.path[0];
         const holdingGato = !!this.getPickable();
         const speed = holdingGato ? RAVEN.SPEED_ESCAPE : RAVEN.SPEED_NORMAL;
 
-        const x = clampEqual(nextTileCoords.x - currentCoords.x + (tileSizes.width - ravenSizes.width) / 2, speed);
-        const y = clampEqual(nextTileCoords.y - currentCoords.y + (tileSizes.height - ravenSizes.height) / 2, speed);
+        this.move({
+            x: clampEqual(nextMove.x, speed),
+            y: clampEqual(nextMove.y, speed),
+        });
 
-        console.log(x)
-
-        this.move({x, y});
-        if(x) this.textureHandler?.setFlippedHorizontally(x > 0)
+        if(nextMove.x) this.textureHandler?.setFlippedHorizontally(nextMove.x > 0)
         
-        if(coordinatesEqual(nextTileCoords, this.getCoords())) this.path.shift(); //
+        if(coordinatesEqual(nextMove, this.getCoords())) this.path.shift(); 
         return !this.path?.length;
     }
 }

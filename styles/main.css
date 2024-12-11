@@ -11,6 +11,7 @@ main {
     overflow: hidden;
     background-image: url('/assets/background/background3.png');
     background-size: cover;
+    background-position-y: 1644;
 }
 
 canvas#game-canvas {

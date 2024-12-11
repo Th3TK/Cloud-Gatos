@@ -103,13 +103,10 @@ export default class EnemiesHolder {
         return pickedGato;
     }
 
-    private spawn(enemy: Enemy) {
-        
+    private spawn(enemy: Enemy) {        
         enemy.setPath([]);
 
-        const enemyCoords = enemy.getCoords();
         const playerCoords = this.player.getCoords();
-        const playerSizes = this.player.getSizes();
 
         const spawnCoords = {
             x: randomChoice([playerCoords.x - 2000, playerCoords.x + 2000]),
@@ -120,10 +117,6 @@ export default class EnemiesHolder {
             spawnCoords.x += (spawnCoords.x > playerCoords.x ? BOARD.TILE_SIZES.width : -BOARD.TILE_SIZES.width);
 
         enemy.setCoords(spawnCoords)
-
-        console.log(playerCoords, enemy.getCoords(), enemy.getPath());
-
-
         enemy.show();
     }
 

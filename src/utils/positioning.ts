@@ -4,7 +4,7 @@ import { randomSign, randomNumber } from "./misc.ts";
 
 export const coordsToPair = (coordinates: Coordinates) : [x: number, y: number] => [coordinates.x, coordinates.y];
 
-export const pairToCoords = (pair: [x: number, y: number]) : Coordinates => ({x: pair?.[0] || NaN, y: pair?.[1] || NaN});
+export const pairToCoords = (pair: [x: number, y: number]) : Coordinates => ({x: pair?.[0], y: pair?.[1]});
 
 export const getPos = (
     coords: Coordinates, 
