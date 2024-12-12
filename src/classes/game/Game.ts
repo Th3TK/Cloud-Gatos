@@ -128,6 +128,7 @@ export default class Game {
         /* .................................. */
 
     public start() {
+        this.pointsDisplay.innerHTML = '';
         this.newBoxGatoPair();
         this.enemies.addEnemy();
         this.enemies.enterDisengageMode();
@@ -162,7 +163,6 @@ export default class Game {
     }
 
     private gameLost() {
-        console.log('Game over.');
         if(this.gameLostCallback) this.gameLostCallback(this.points);
         this.running = false;
     }

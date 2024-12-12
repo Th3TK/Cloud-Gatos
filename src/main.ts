@@ -30,7 +30,7 @@ const startGame = () => {
     keyboardHandler.registerKeysUp(['w', 'a', 's', 'd'], movementHandler.keyRelease);
     keyboardHandler.registerKeyDown('r', game.playerRelease);
     keyboardHandler.registerKeyDown('l', game.stop);
-    keyboardHandler.registerKeyDown('i', game.addPoint)
+    // keyboardHandler.registerKeyDown('i', game.addPoint)
 
     game.addGameLostCallback((points: number) => {
         movementHandler.stop();
