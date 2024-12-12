@@ -25,7 +25,6 @@ export default class Carrier extends Entity {
 
     public tryPick(pickable: Pickable): boolean {
         if (!this.canPick || !pickable.canBePickedBy(this)) return false;
-        console.log('picked!')
 
         pickable.pickUp(this);
 

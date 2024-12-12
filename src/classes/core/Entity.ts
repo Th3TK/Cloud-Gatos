@@ -17,7 +17,9 @@ export default class Entity {
         this.sizes = sizes;
     }
 
-    public getCoords = (): Coordinates => this.coordinates;
+    public getCoords() : Coordinates {
+        return this.coordinates;
+    }   
     public setCoords = (coords: Coordinates) => this.coordinates = coords;
     public getSizes = (): Sizes => this.sizes;
     public getCenter = (): Coordinates => ({

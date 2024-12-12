@@ -46,19 +46,19 @@ export default class Pointer {
         
     }
 
-    public updatePointing(playerCenter: Coordinates) {
+    public updatePointing(playerCoords: Coordinates) {
         if (!this.target) return;
 
-        if(!isObjectVisibleOnCanvas(this.target.getRect(), playerCenter)) this.show();
+        if(!isObjectVisibleOnCanvas(this.target.getRect(), playerCoords)) this.show();
         else this.hide();
         
         const targetCoords = this.target.getCenter();
-        const dx = (targetCoords.x ) - (playerCenter.x );
-        const dy = (targetCoords.y) - (playerCenter.y );
+        const dx = (targetCoords.x ) - (playerCoords.x);
+        const dy = (targetCoords.y) - (playerCoords.y);
 
         const linearDistance = Math.sqrt(Math.pow(dy, 2) + Math.pow(dx, 2));
-        const x = (dx * POINTER.getPointerRadius()) / linearDistance + playerCenter.x;
-        const y = (dy * POINTER.getPointerRadius()) / linearDistance + playerCenter.y;
+        const x = (dx * POINTER.getPointerRadius()) / linearDistance + playerCoords.x;
+        const y = (dy * POINTER.getPointerRadius()) / linearDistance + playerCoords.y;
 
         if(this.element) this.element.style.rotate = `${Math.atan2(dy, dx) + 3 * Math.PI / 2}rad`;
         this.coordinates = { x, y };

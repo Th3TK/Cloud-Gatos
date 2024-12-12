@@ -82,7 +82,9 @@ export default class Board {
         if (id in this.obstacles) return this.obstacles[id];
 
         if (!this.isObstacle(tileCoordinates)) return null;
-        this.obstacles[id] = new Obstacle(tileCoordinates, this.tileSize);
+        const tileNoiseValue = this.noise.noise2D(tileCoordinates.x, tileCoordinates.y);
+
+        this.obstacles[id] = new Obstacle(tileCoordinates, this.tileSize, tileNoiseValue);
     }
 
     private generateObstacles(currentTile: Coordinates) {
@@ -152,8 +154,6 @@ export default class Board {
         while(!found) {
             // find an obstacle tile for the gato to sit on (searches in a snake around the tile)
             while (!this.isObstacle(tileCoordinates)) next();
-
-            console.log(tileCoordinates, x, y, dx, dy)
 
             // then move up since we want the gato to sit on the obstacle, not inside
             const tileCoordinatesCopy = structuredClone(tileCoordinates);

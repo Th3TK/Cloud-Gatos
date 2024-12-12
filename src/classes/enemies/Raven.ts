@@ -66,7 +66,6 @@ export default class Raven extends Carrier {
         if(!this.target) return;
         const targetCoords = this.target?.getCoords();
         const currentCoords = this.getCoords();
-        console.log('atak!')
 
         this.move({
             x: clampEqual(targetCoords.x - currentCoords.x, RAVEN.SPEED_STEAL),

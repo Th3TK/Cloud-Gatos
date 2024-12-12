@@ -1,18 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sky Gatos</title>
+    <title>Cloud Gatos</title>
     <script src="./src/main.ts" type="module" defer></script>
-    <link href="./styles/main.css" rel="stylesheet"/>
+    <link href="./styles/main.css" rel="stylesheet" />
 </head>
+
 <body>
-    <canvas id="game-canvas"></canvas>
-    <div id="game-elements">
-        <div id="pointsCounter"></div>
-        <div id="pointer"></div>
-        <div id="player"></div>
-    </div>
+    <main>
+        <div id="game-container">
+            <canvas id="game-canvas"></canvas>
+            <div id="points-counter">
+                <img id="points-counter-gato" src="/assets/gato/gato_in_a_box.png" alt="Gato in a box" title=":3">
+                <span id="points-display"></span>
+            </div>
+            <div id="pointer"></div>
+            <div id="player"></div>
+        </div>
+        <div id="menu" class="current">
+            <section no="1">
+                <div id="interactive">
+                    <button id="play-button" class="menu-button">PLAY</button>
+                    <button id="credits-button" class="menu-button">CREDITS</button>
+                </div>
+            </section>
+            <section no="2">
+                <img id="hero-icon" src="/assets/menu/icon.png">
+            </section>
+        </div>
+        <div id="endscreen">
+            <h1>Game over</h1>
+            <div id="endscreen-stats">
+                <div id="endscreen-score">
+                    <img src="/assets/gato/gato_in_a_box.png" alt="Gato in a box" title=":3">
+                    Gatos delivered:
+                    <span id="endscreen-score-out"></span>
+                </div>
+                <div id="endscreen-highscore">
+                    <img src="/assets/menu/trophy.png" alt="Gato in a box" title=":3">
+                    Highscore:
+                    <span id="endscreen-highscore-out"></span>
+                </div>
+            </div>
+                <div class="endscreen-button--wrapper">
+                    <button id="play-again" class="endscreen-button">Play again</button>
+                </div>
+                <div class="endscreen-button--wrapper">
+                    <button id="return-to-menu" class="endscreen-button">Return to menu</button>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
+
 </html>

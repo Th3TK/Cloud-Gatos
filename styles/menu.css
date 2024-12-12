@@ -1,0 +1,59 @@
+#menu {
+    background-image: url('../assets/background/background3.png');
+    background-size: cover;
+    background-position: bottom;
+
+    display: flex;
+    justify-content: center;
+}
+
+#menu > section {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+}
+
+#menu > section[no='1']{
+    justify-content: flex-end;
+}
+
+#menu > section[no='2']{
+    justify-content: flex-start;
+}
+
+#menu img#hero-icon {
+    height: 90%;
+}
+
+
+#menu #interactive {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+    gap: 75px;
+}
+
+#menu #interactive > button {
+    width: 500px;
+    height: 150px;
+    padding: 0;
+
+    background-color: transparent;
+    color: white;
+    font-family: Upheaval;
+    font-size: 96px;
+
+    transition: background-color 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out;
+}
+
+#menu #interactive > button:hover {
+    background-color: white;
+    color: black;
+    mix-blend-mode: screen;
+    transform: translate(-2px, -2px);
+}

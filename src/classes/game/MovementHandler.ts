@@ -1,7 +1,7 @@
 import { GAME, PLAYER } from "../../config/_config";
 import { Pressed } from "../../types/common.types";
 import { clampEqual } from "../../utils/misc";
-import { Game } from "./Game";
+import Game from "./Game";
 
 const KEYS_MAPPED : {[x: string]: string} = {
     'w': 'up',
@@ -11,11 +11,12 @@ const KEYS_MAPPED : {[x: string]: string} = {
 }
 
 export default class MovementHandler {
-    game: Game;
-    pressed: Pressed;
-    updateInterval: number;
-    verticalVelocity: number = 0;
-    horizontalVelocity: number = 0;
+    private active: boolean = false;
+    private game: Game;
+    private pressed: Pressed;
+    private updateInterval: number;
+    private verticalVelocity: number = 0;
+    private horizontalVelocity: number = 0;
 
     constructor(game: Game) {
         this.game = game;
@@ -81,14 +82,18 @@ export default class MovementHandler {
     }
 
     public start() {
+        if(this.active) return;
         window.addEventListener('blur', this.clearMovement);
 
         this.updateInterval = setInterval(this.updateMovement, 1000 / GAME.UPDATES_PER_SECOND);
         this.game.tick({x: 1, y: 1});
+        this.active = true;
     }
 
     public stop() {
+        if(!this.active) return;
         window.removeEventListener('blur', this.clearMovement);
         clearInterval(this.updateInterval);
+        this.active = false;
     }
 }

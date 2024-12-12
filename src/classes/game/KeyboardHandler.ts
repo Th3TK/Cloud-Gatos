@@ -1,6 +1,7 @@
 import { KeyActionCallback, KeyActions } from "../../types/keyboard.types";
 
 export default class KeyboardHandler {
+    private active = false;
     private onKeyDown: KeyActions = {};
     private onKeyUp: KeyActions = {};
 
@@ -42,12 +43,16 @@ export default class KeyboardHandler {
     }
 
     start() {
+        if(this.active) return;
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
+        this.active = true;
     }
 
     stop() {
+        if(!this.active) return;
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('keyup', this.handleKeyUp);
+        this.active = false;
     }
 }

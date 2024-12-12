@@ -3,8 +3,8 @@ import { MinMax, Sizes } from "../types/common.types";
 export const GATO = {
     ACCELERATION: 1,
     MAX_SPEED: 20,
-    SPAWN_DISTANCE_HORIZONTAL: {min: 2, max: 2} as MinMax,
-    SPAWN_DISTANCE_VERTICAL: {min: 2, max: 2} as MinMax,
+    SPAWN_DISTANCE_HORIZONTAL: {min: 5, max: 10} as MinMax,
+    SPAWN_DISTANCE_VERTICAL: {min: 5, max: 10} as MinMax,
     SIZES: {
         width: 70,
         height: 65,

@@ -1,86 +1,90 @@
+@import './fonts.css';
+@import './game.css';
+@import './menu.css';
+@import './game_over.css';
+@import './pixel/pixel-corners-endscreen-buttons.css';
+@import './pixel/pixel-corners-menu-buttons.css';
+
 * {
-    font-family: Tahoma;
+    font-family: Pixellari;
     image-rendering: pixelated;
     background-repeat: no-repeat;
     background-size: contain;
 }
 
-body,
-main {
+html, body {
     margin: 0;
     overflow: hidden;
-    background-image: url('/assets/background/background3.png');
-    background-size: cover;
-    background-position-y: 1644;
+    z-index: 1000;
 }
 
-canvas#game-canvas {
-    position: absolute;
+button {
+    border: none;
+    cursor: pointer;
+}
+
+main {
     width: 100vw;
     height: 100vh;
-    z-index: 100;
 }
 
-#pointsCounter {
+#menu, #game-container, #endscreen {
+    width: 100vw;
+    height: 100vh;
     position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 3rem;
-
-    z-index: 100;
+    left: 0;
+    top: 0;
+    visibility: hidden;
 }
 
-#obstacleContainer {
-    position: absolute;
+#menu {
+    visibility: visible;
 }
 
-#player {
-    position: absolute;
-    top: 50%;
-    left: 50%;
 
-    width: 150px;
-    height: 90px;
-    /* background-color: rgba(255, 0, 0, 0.368); */
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-    animation: playerBackgroundAnimation 0.4s steps(1) infinite;
-    z-index: 60;
-}
-
-@keyframes playerBackgroundAnimation {
+@keyframes wipe {
     0% {
-        background-image: url('/assets/player_1.png');
+        clip-path: inset(0);
+        visibility: hidden;
     }
-    50% {
-        background-image: url('/assets/player_2.png');
+    25% {
+        clip-path: inset(0 100% 0 0); 
+        visibility: hidden;
+    }
+    75% {
+        clip-path: inset(0 0 0 100%); 
+        visibility: visible;
+    }
+    100% {
+        clip-path: inset(0);
+        visibility: visible;
     }
 }
 
-#pointer {
-    position: absolute;
-
-    width: 85px;
-    height: 85px;
-
-    opacity: 0;
-    background-image: url('/assets/arrow_gato.png');
-    transition: opacity 0.15s ease-in-out;
-
-    z-index: 100;
+@keyframes wipeReverse {
+    0% {
+        clip-path: inset(0);
+        visibility: visible;
+    }
+    25% {
+        clip-path: inset(0 100% 0 0); 
+        visibility: visible;
+    }
+    75% {
+        clip-path: inset(0 0 0 100%); 
+        visibility: hidden;
+    }
+    100% {
+        clip-path: inset(0);
+        visibility: hidden;
+    }
 }
 
-#pointer[target='gato'] {
-    background-image: url('/assets/arrow_gato.png');
-}
-
-#pointer[target='enemy']{
-    background-image: url('/assets/arrow_enemy.png');
-}
-
-#pointer[target='box']{
-    background-image: url('/assets/arrow_box.png');
+@keyframes appear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }

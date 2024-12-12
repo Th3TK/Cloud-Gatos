@@ -8,49 +8,50 @@ import EnemiesHolder from "../enemies/EnemiesHolder.js";
 import Raven from "../enemies/Raven.js";
 import CanvasDisplay from "../display/CanvasDisplay.js";
 import { straightLineDistance } from "../../utils/positioning.js";
-import BackgroundPositioner from "../display/BackgroundPositioner.js";
 import { randomNumber } from "../../utils/misc.js";
 
 export default class Game {
-    private pointCounter: HTMLElement;
+    private running: boolean = false;
+    private pointsDisplay: HTMLElement;
     private player: Player;
     private board: Board;
     private canvasDisplay: CanvasDisplay;
-    private background: BackgroundPositioner;
     private gatoBoxPair: GatoBoxPair | null = null;
     private pointer: Pointer;
     private enemies: EnemiesHolder;
     private points = 0;
-    private gameLostCallback: () => void;
+    private gameLostCallback: (points: number) => void;
 
     constructor(
         playerElement: HTMLElement,  
         pointerElement: HTMLElement, 
-        pointCounter: HTMLElement,
+        pointsDisplay: HTMLElement,
         gameCanvas: HTMLCanvasElement,
         seed: number,
     ) {
-        this.pointCounter = pointCounter;
+        this.pointsDisplay = pointsDisplay;
 
         this.player = new Player(playerElement);
         this.pointer = new Pointer(pointerElement);
         this.board = new Board(seed, this.player);
         this.enemies = new EnemiesHolder(this.board, this.player, this.gatoBoxPair?.gato);
         this.player.addCollisionHandler(this.board);
-        this.background = new BackgroundPositioner(this.board);
         this.canvasDisplay = new CanvasDisplay(gameCanvas, this.board);
         
         this.addPoint = this.addPoint.bind(this);
         this.playerRelease = this.playerRelease.bind(this);
         this.newBoxGatoPair = this.newBoxGatoPair.bind(this);
         this.playerEnteredNewTile = this.playerEnteredNewTile.bind(this);
+        this.stop = this.stop.bind(this);
     }
     
     /* .................................. */
     /* to be called outside the game      */
     /* .................................. */
     
-    public addGameLostCallback = (gameLostCallback: () => void) => this.gameLostCallback = gameLostCallback;
+    public isGameRunning = () => this.running;
+
+    public addGameLostCallback = (gameLostCallback: (points: number) => void) => this.gameLostCallback = gameLostCallback;
 
     public playerRelease() {
         if(!this.gatoBoxPair || !this.player.getPickable()) return;
@@ -124,21 +125,24 @@ export default class Game {
 
     /* .................................. */
     /*               GAME                 */
-    /* .................................. */
+        /* .................................. */
 
     public start() {
         this.newBoxGatoPair();
         this.enemies.addEnemy(new Raven(this.board));
         this.enemies.enterDisengageMode();
+        this.running = true;
     }
 
-    protected addPoint() {
-        console.log('success!')
+    public stop() {
+        this.gameLost();
+    }
 
+    private addPoint() {
         this.playerRelease();
         this.newBoxGatoPair();
         this.enemies.enterDisengageMode();
-        this.pointCounter.innerText = `${++this.points}`;
+        this.pointsDisplay.innerHTML = `${++this.points}`;
     }
 
     private checkIfGameLost() {
@@ -156,7 +160,8 @@ export default class Game {
 
     private gameLost() {
         console.log('Game over.');
-        if(this.gameLostCallback) this.gameLostCallback();
+        if(this.gameLostCallback) this.gameLostCallback(this.points);
+        this.running = false;
     }
 
     public tick(movement: Movement) {
@@ -165,7 +170,7 @@ export default class Game {
         const playerCoords = this.player.getCoords();
         
         this.updateGatoBoxPair(playerCoords); 
-        this.pointer.updatePointing(this.player.getCenter());
+        this.pointer.updatePointing(playerCoords);
         this.pointer.updatePosition(playerCoords);
         this.board.updateBoard(this.playerEnteredNewTile);
         
@@ -173,8 +178,6 @@ export default class Game {
         if(enemyWithGato) this.pointer.pointAt(enemyWithGato);
         
         this.canvasDisplay.update(this.player, this.enemies, this.gatoBoxPair);
-        this.background.updatePosition(playerCoords);
-        
         if(this.checkIfGameLost()) this.gameLost();
 
         // const currentBoardTile = this.board.getCurrentTileCoords();

@@ -1,0 +1,82 @@
+canvas#game-canvas {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+}
+
+#points-counter {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+img#points-counter-gato {
+    height: 80px;
+}
+
+#points-counter:has(#points-display:empty) {
+    display: none;
+}
+
+#points-display {
+    padding-top: 10px;
+    font-size: 80px;
+    line-height: 1;
+}
+
+#player {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    width: 150px;
+    height: 90px;
+    /* background-color: rgba(255, 0, 0, 0.368); */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    animation: playerBackgroundAnimation 0.4s steps(1) infinite;
+    z-index: 60;
+}
+
+@keyframes playerBackgroundAnimation {
+    0% {
+        background-image: url('/assets/player/player_1.png');
+    }
+    50% {
+        background-image: url('/assets/player/player_2.png');
+    }
+}
+
+#pointer {
+    position: absolute;
+
+    width: 85px;
+    height: 85px;
+
+    opacity: 0;
+    background-image: url('/assets/arrow/arrow_gato.png');
+    transition: opacity 0.15s ease-in-out;
+
+    z-index: 100;
+}
+
+#pointer[target='gato'] {
+    background-image: url('/assets/arrow/arrow_gato.png');
+}
+
+#pointer[target='enemy']{
+    background-image: url('/assets/arrow/arrow_enemy.png');
+}
+
+#pointer[target='box']{
+    background-image: url('/assets/arrow/arrow_box.png');
+}

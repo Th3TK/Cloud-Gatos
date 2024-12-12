@@ -1,4 +1,4 @@
-import { AnimationFrame } from "../../types/canvas.types";
+import { AnimationFrame } from "../../types/display.types";
 import Gato from "../game/Gato";
 
 export default class TextureHandler {
@@ -27,7 +27,6 @@ export default class TextureHandler {
         else textureKey = this.chooseTexture?.();
 
         if(!textureKey) return;
-        if(textureKey === 'gato_black_picked' || textureKey === 'gato_orange_picked') console.log(this.isFlippedHorizontally())
         return `${textureKey}${this.isFlippedHorizontally() ? '_flipped' : ''}`;  
     }
 

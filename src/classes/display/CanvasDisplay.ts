@@ -1,11 +1,11 @@
 import BOARD from "../../config/board.config";
 import GAME from "../../config/game.config";
-import TEXTURES, { COLORS } from "../../config/textures.config";
-import { Rectangle } from "../../types/canvas.types";
-import { Coordinates, CoordinatesPair, Sizes } from "../../types/common.types";
+import TEXTURES, { TEXTURE_SIZES } from "../../config/textures.config";
+import { Rectangle } from "../../types/display.types";
+import { Coordinates, Sizes } from "../../types/common.types";
 import { Enemy } from "../../types/enemies.types";
-import { safeObjectValues } from "../../utils/misc";
-import { pairToCoords, straightLineDistance } from "../../utils/positioning";
+import { randomChoice, safeObjectValues } from "../../utils/misc";
+import { straightLineDistance } from "../../utils/positioning";
 import Entity from "../core/Entity";
 import EnemiesHolder from "../enemies/EnemiesHolder";
 import Raven from "../enemies/Raven";
@@ -96,7 +96,11 @@ export default class CanvasDisplay {
         const waterCoordinateY = this.board.getCoordsFromTile({x: 0, y: -BOARD.WATER_LEVEL_TILE}).y;
         const canvasY = waterCoordinateY + BOARD.TILE_SIZES.height - offset.y + window.innerHeight / 2;
         
-        this.canvasFillRect({x: 0, y: canvasY, width: window.innerWidth, height: window.innerHeight - canvasY}, COLORS.water2);
+        let x = -((offset.x - Date.now()/32) % TEXTURE_SIZES.WATER_WIDTH_SCALED) - TEXTURE_SIZES.WATER_WIDTH_SCALED;
+        while(x < window.innerWidth){
+            this.canvasDrawImage({x: x, y: canvasY, width: TEXTURE_SIZES.WATER_WIDTH_SCALED + 1, height: TEXTURE_SIZES.WATER_HEIGHT_SCALED}, 'water');
+            x += TEXTURE_SIZES.WATER_WIDTH_SCALED;
+        }
     }
 
     private drawVignette(playerCoords: Coordinates, enemyCoords: Coordinates) {
@@ -115,6 +119,21 @@ export default class CanvasDisplay {
 
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+
+    private drawBackground(playerCoords: Coordinates) {
+        const MAX_COORDS = -GAME.ENTITY_MAX_Y;
+        const MIN_COORDS = -GAME.ENTITY_MIN_Y;
+
+        const backgroundAspectRatio =  TEXTURE_SIZES.BACKGROUND_WIDTH_PX / TEXTURE_SIZES.BACKGROUND_HEIGHT_PX 
+        const width = window.innerWidth;
+        const height = window.innerWidth / backgroundAspectRatio;
+
+        const MAX_OFFSET = height - TEXTURE_SIZES.BACKGROUND_HEIGHT_PX - 100;
+
+        const backgroundOffset = MAX_OFFSET * (MAX_COORDS - playerCoords.y) / (MIN_COORDS - MAX_COORDS);
+
+        this.canvasDrawImage({x: 0, y: backgroundOffset, width, height}, 'background')
     }
 
     /* .................................. */
@@ -149,9 +168,10 @@ export default class CanvasDisplay {
     }
 
     update(player: Player, enemies: EnemiesHolder, gatoBoxPair?: GatoBoxPair | null) {
+        const playerCoords = player.getCenter()
+
         this.clearCanvas();
-        
-        const playerCoords = player.getCoords()
+        this.drawBackground(playerCoords);
         
         this.updateObstacles(playerCoords);
         if(gatoBoxPair) this.updateGatoBoxPair(gatoBoxPair, playerCoords);

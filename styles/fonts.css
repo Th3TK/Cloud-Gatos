@@ -1,0 +1,24 @@
+@font-face {
+    font-family: 'Upheaval';
+    src: url('/assets/fonts/UpheavalTT-BRK-.eot');
+    src: url('/assets/fonts/UpheavalTT-BRK-.eot?#iefix') format('embedded-opentype'),
+        url('/assets/fonts/UpheavalTT-BRK-.woff2') format('woff2'),
+        url('/assets/fonts/UpheavalTT-BRK-.woff') format('woff'),
+        url('/assets/fonts/UpheavalTT-BRK-.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pixellari';
+    src: url('/assets/fonts/Pixellari.eot');
+    src: url('/assets/fonts/Pixellari.eot?#iefix') format('embedded-opentype'),
+        url('/assets/fonts/Pixellari.woff2') format('woff2'),
+        url('/assets/fonts/Pixellari.woff') format('woff'),
+        url('/assets/fonts/Pixellari.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+

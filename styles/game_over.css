@@ -1,0 +1,53 @@
+#endscreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+}
+
+#endscreen > h1 {
+    font-size: 128px;
+    margin: 0;
+}
+
+#endscreen-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+#endscreen-score, #endscreen-highscore {    
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    font-size: 48px;
+}
+
+#endscreen img {
+    height: 64px;
+}
+
+#endscreen button {
+    width: 400px;
+    height: 100px;
+    padding: 0;
+    
+    color: black;
+    font-size: 38px;
+
+    transition: background-color 0.2s ease-in-out;
+}
+
+#endscreen button:hover {
+    background-color: black;
+    color: white;
+    mix-blend-mode: screen;
+}
+
+#endscreen .flex-group{
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
