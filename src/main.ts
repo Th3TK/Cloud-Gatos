@@ -30,16 +30,15 @@ const startGame = () => {
     keyboardHandler.registerKeysUp(['w', 'a', 's', 'd'], movementHandler.keyRelease);
     keyboardHandler.registerKeyDown('r', game.playerRelease);
     keyboardHandler.registerKeyDown('l', game.stop);
+    keyboardHandler.registerKeyDown('i', game.addPoint)
 
     game.addGameLostCallback((points: number) => {
         movementHandler.stop();
         keyboardHandler.stop();
     
         movePages(gameContainer, endscreenContainer);
-
-        const highScore = parseInt(`${Cookies.get('highscore')}`);
-        if(!isNaN(highScore) && points > highScore) Cookies.set('highscore', `${points}`);
-
+        
+        const highScore = updateAndGetHighScore(points);
         finalScoreOutput.innerText = `${points}`;
         highScoreOutput.innerText = `${highScore}`;
     })
@@ -70,4 +69,13 @@ function movePages(from: HTMLElement, to: HTMLElement) {
 
     to.classList.add('current');
     from.classList.remove('current');  
+}
+
+function updateAndGetHighScore(points: number) {
+    let highScore = parseInt(`${Cookies.get('highscore')}`);
+    if(isNaN(highScore) || points > highScore) {
+        Cookies.set('highscore', `${points}`);
+        highScore = points;
+    }
+    return highScore;
 }

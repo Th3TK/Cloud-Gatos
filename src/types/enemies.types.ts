@@ -7,3 +7,5 @@ export type Enemy = Raven;
 export type EnemyModes = 'disengage' | 'attack' | 'escape';
 
 export type EnemyTargets = Player | Gato | null;
+
+export type RavenColors = 'red' | 'pink' | 'orange' | 'cyan'

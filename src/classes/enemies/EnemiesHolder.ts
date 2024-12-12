@@ -1,13 +1,14 @@
 import BOARD from "../../config/board.config";
 import GAME from "../../config/game.config";
 import { Coordinates, Direction } from "../../types/common.types";
-import { Enemy, EnemyModes, EnemyTargets } from "../../types/enemies.types";
-import { randomChoice, squareMatrixFrom } from "../../utils/misc";
+import { Enemy, EnemyModes, EnemyTargets, RavenColors } from "../../types/enemies.types";
+import { clamp, randomChoice, randomNumber, squareMatrixFrom } from "../../utils/misc";
 import { reverseOffsetCoords, straightLineDistance } from "../../utils/positioning";
 import PathfindingMatrix from "../core/PathfindingMatrix";
 import Board from "../environment/Board";
 import Gato from "../game/Gato";
 import Player from "../game/Player";
+import Raven from "./Raven";
 
 export default class EnemiesHolder {
     private enemies: Enemy[] = [];
@@ -16,6 +17,7 @@ export default class EnemiesHolder {
     private player: Player;
     private gato?: Gato;
     private pathfindingMatrix: PathfindingMatrix;
+    private freeColors: RavenColors[] = ['red', 'pink', 'orange', 'cyan'];
 
     constructor(board: Board, player: Player, gato?: Gato) {
         this.player = player;
@@ -33,7 +35,14 @@ export default class EnemiesHolder {
     public getMode = (): EnemyModes => this.mode;
     public setMode = (value: EnemyModes) => {this.mode = value;}
     public getEnemies = (): Enemy[] => this.enemies;
-    public addEnemy = (enemy: Enemy) => {this.enemies.push(enemy)};
+    public addEnemy = () => {
+        if(!this.freeColors.length) return;
+        const color = randomChoice(this.freeColors);
+        const index = this.freeColors.indexOf(color);
+        this.freeColors.splice(index, 1);
+        
+        this.enemies.push(new Raven(this.board, color));
+    };
     public setTarget = (target: EnemyTargets) => this.enemies.forEach(enemy => enemy.setTarget(target));
     public clearTarget = () => this.enemies.forEach(enemy => enemy.clearTarget());
     public assignGato = (gato: Gato) => this.gato = gato;
@@ -76,7 +85,7 @@ export default class EnemiesHolder {
         // furthest point away from the player in the x direction:
         const escapeCoords = (enemy: Enemy) => {
             const x = playerToTheRight(enemy) ? 0 : this.pathfindingMatrix.getSize() - 1;
-            const y = currentPlayerTile.y;
+            const y = clamp(currentPlayerTile.y + randomNumber(-10, 10), BOARD.HEIGHT_LIMIT_TILE, BOARD.WATER_LEVEL_TILE);
             const offset = enemy.getOffset(currentPlayerTile);
             const tile = reverseOffsetCoords({x, y}, offset);
 
@@ -107,11 +116,14 @@ export default class EnemiesHolder {
         enemy.setPath([]);
 
         const playerCoords = this.player.getCoords();
+        const randomYOffset = (randomNumber(0, 20) - 10) * BOARD.TILE_SIZES.height;
 
         const spawnCoords = {
             x: randomChoice([playerCoords.x - 2000, playerCoords.x + 2000]),
-            y: playerCoords.y,
+            y: clamp(playerCoords.y + randomYOffset, BOARD.HEIGHT_LIMIT_TILE, BOARD.WATER_LEVEL_TILE),
         }
+
+        console.log(spawnCoords);
 
         while(this.board.isObstacle(this.board.getTileCoords(spawnCoords))) 
             spawnCoords.x += (spawnCoords.x > playerCoords.x ? BOARD.TILE_SIZES.width : -BOARD.TILE_SIZES.width);

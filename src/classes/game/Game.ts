@@ -129,7 +129,7 @@ export default class Game {
 
     public start() {
         this.newBoxGatoPair();
-        this.enemies.addEnemy(new Raven(this.board));
+        this.enemies.addEnemy();
         this.enemies.enterDisengageMode();
         this.running = true;
     }
@@ -138,11 +138,14 @@ export default class Game {
         this.gameLost();
     }
 
-    private addPoint() {
+    public addPoint() {
+        this.pointsDisplay.innerHTML = `${++this.points}`;
+
         this.playerRelease();
         this.newBoxGatoPair();
+
+        if(!(this.points % 10)) this.enemies.addEnemy();
         this.enemies.enterDisengageMode();
-        this.pointsDisplay.innerHTML = `${++this.points}`;
     }
 
     private checkIfGameLost() {

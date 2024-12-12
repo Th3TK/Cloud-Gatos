@@ -1,7 +1,7 @@
 import { Coordinates, CoordinatesPair } from "../../types/common.types";
 import Carrier from "../core/Carrier";
 import Board from "../environment/Board";
-import { EnemyTargets } from "../../types/enemies.types";
+import { EnemyTargets, RavenColors } from "../../types/enemies.types";
 import { coordinatesEqual, offsetCoords, pairToCoords, reverseOffsetCoords, straightLineDistance } from "../../utils/positioning";
 import { clamp, clampEqual } from "../../utils/misc";
 import { AStarFinder } from 'astar-typescript';
@@ -13,17 +13,20 @@ export default class Raven extends Carrier {
     private target: EnemyTargets;
     private canAttack = true;
     private hidden = false;
+    private color: RavenColors;
 
-    constructor(board: Board) {
+    constructor(board: Board, color: RavenColors) {
         super({x: -5000, y: 0}, RAVEN.SIZES);
         this.board = board;
+        this.color = color;
 
         this.followPath = this.followPath.bind(this);
         this.pathfind = this.pathfind.bind(this);
         this.startAttackCooldown = this.startAttackCooldown.bind(this);
 
+        console.log(this.color, RAVEN.TEXTURE_KEYS[this.color])
         this.addTextureHandler();
-        this.textureHandler!.addAnimation(RAVEN.TEXTURE_KEYS.map(key => ({textureKey: key, duration: RAVEN.ANIMATION_KEYFRAME_DURATION})));
+        this.textureHandler!.addAnimation(RAVEN.TEXTURE_KEYS[this.color].map(key => ({textureKey: key, duration: RAVEN.ANIMATION_KEYFRAME_DURATION})));
         this.textureHandler!.startAnimation(true);
     }
 
