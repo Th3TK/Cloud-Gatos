@@ -1,6 +1,8 @@
 import { Textures } from "../../types/display.types";
 import { safeObjectEntries } from "../../utils/misc";
 
+const basePath = import.meta.env.BASE_URL;
+
 export default class TextureBank {
     imageElements: {[key: string]: HTMLImageElement} = {}
 
@@ -16,7 +18,7 @@ export default class TextureBank {
 
     public setTexture = (key: string, path: string) => {
         const img = new Image(); 
-        img.src = `${path}`;
+        img.src = `${basePath}${path}`;
         this.imageElements[key] = img;
     }
 

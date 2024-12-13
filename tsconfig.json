@@ -3,17 +3,29 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "strictPropertyInitialization": false,
-    "lib": ["es2017", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ], // Updated to include es2020 for compatibility with import.meta
     "outDir": "./dist",
     "rootDir": "./src",
-    "target": "ES6",
-    "module": "ES6",
+    "target": "ES2020", // Updated to ES2020 to enable import.meta support
+    "module": "ES2020", // Updated to ES2020 to support ES Modules and import.meta
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ]
   },
-  "include": ["src/**/*.ts", "src/config/_config.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "src/config/_config.ts",
+    "headers/vite-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
