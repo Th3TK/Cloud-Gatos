@@ -145,7 +145,6 @@ export default class Game {
         this.playerRelease();
         this.newBoxGatoPair();
 
-        if(!(this.points % 10)) this.enemies.addEnemy();
         this.enemies.enterDisengageMode();
     }
 

@@ -36,12 +36,12 @@ export default class EnemiesHolder {
     public setMode = (value: EnemyModes) => {this.mode = value;}
     public getEnemies = (): Enemy[] => this.enemies;
     public addEnemy = () => {
-        if(!this.freeColors.length) return;
-        const color = randomChoice(this.freeColors);
-        const index = this.freeColors.indexOf(color);
-        this.freeColors.splice(index, 1);
+        // if(!this.freeColors.length) return;
+        // const color = randomChoice(this.freeColors);
+        // const index = this.freeColors.indexOf(color);
+        // this.freeColors.splice(index, 1);
         
-        this.enemies.push(new Raven(this.board, color));
+        this.enemies.push(new Raven(this.board, 'pink'));
     };
     public setTarget = (target: EnemyTargets) => this.enemies.forEach(enemy => enemy.setTarget(target));
     public clearTarget = () => this.enemies.forEach(enemy => enemy.clearTarget());
@@ -85,7 +85,7 @@ export default class EnemiesHolder {
         // furthest point away from the player in the x direction:
         const escapeCoords = (enemy: Enemy) => {
             const x = playerToTheRight(enemy) ? 0 : this.pathfindingMatrix.getSize() - 1;
-            const y = clamp(currentPlayerTile.y + randomNumber(-10, 10), BOARD.HEIGHT_LIMIT_TILE, BOARD.WATER_LEVEL_TILE);
+            const y = currentPlayerTile.y;
             const offset = enemy.getOffset(currentPlayerTile);
             const tile = reverseOffsetCoords({x, y}, offset);
 
@@ -116,11 +116,10 @@ export default class EnemiesHolder {
         enemy.setPath([]);
 
         const playerCoords = this.player.getCoords();
-        const randomYOffset = (randomNumber(0, 20) - 10) * BOARD.TILE_SIZES.height;
 
         const spawnCoords = {
             x: randomChoice([playerCoords.x - 2000, playerCoords.x + 2000]),
-            y: clamp(playerCoords.y + randomYOffset, BOARD.HEIGHT_LIMIT_TILE, BOARD.WATER_LEVEL_TILE),
+            y: playerCoords.y,
         }
 
         console.log(spawnCoords);
