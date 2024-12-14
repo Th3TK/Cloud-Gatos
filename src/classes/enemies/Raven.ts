@@ -24,7 +24,6 @@ export default class Raven extends Carrier {
         this.pathfind = this.pathfind.bind(this);
         this.startAttackCooldown = this.startAttackCooldown.bind(this);
 
-        console.log(this.color, RAVEN.TEXTURE_KEYS[this.color])
         this.addTextureHandler();
         this.textureHandler!.addAnimation(RAVEN.TEXTURE_KEYS[this.color].map(key => ({textureKey: key, duration: RAVEN.ANIMATION_KEYFRAME_DURATION})));
         this.textureHandler!.startAnimation(true);

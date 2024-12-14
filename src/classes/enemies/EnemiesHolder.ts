@@ -122,8 +122,6 @@ export default class EnemiesHolder {
             y: playerCoords.y,
         }
 
-        console.log(spawnCoords);
-
         while(this.board.isObstacle(this.board.getTileCoords(spawnCoords))) 
             spawnCoords.x += (spawnCoords.x > playerCoords.x ? BOARD.TILE_SIZES.width : -BOARD.TILE_SIZES.width);
 

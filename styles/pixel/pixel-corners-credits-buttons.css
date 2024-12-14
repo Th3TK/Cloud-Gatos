@@ -1,7 +1,7 @@
 /* https://pixelcorners.lukeb.co.uk/ */
 
-.endscreen-button,
-.endscreen-button--wrapper {
+.credits-button,
+.credits-button--wrapper {
   clip-path: polygon(0px calc(100% - 8px),
     4px calc(100% - 8px),
     4px calc(100% - 4px),
@@ -24,14 +24,14 @@
     0px 8px);
   position: relative;
 }
-.endscreen-button {
+.credits-button {
   border: 4px solid transparent;
 }
-.endscreen-button--wrapper {
+.credits-button--wrapper {
   width: fit-content;
   height: fit-content;
 }
-.endscreen-button--wrapper .endscreen-button {
+.credits-button--wrapper .credits-button {
   display: block;
   clip-path: polygon(4px 8px,
     8px 8px,
@@ -46,8 +46,8 @@
     8px calc(100% - 8px),
     4px calc(100% - 8px));
 }
-.endscreen-button::after,
-.endscreen-button--wrapper::after {
+.credits-button::after,
+.credits-button--wrapper::after {
   content: "";
   position: absolute;
   clip-path: polygon(0px calc(100% - 8px),
@@ -90,10 +90,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #000000;
+  background: #FFF;
   display: block;
   pointer-events: none;
 }
-.endscreen-button::after {
+.credits-button::after {
   margin: -4px;
 }

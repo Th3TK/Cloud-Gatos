@@ -1,9 +1,11 @@
 @import './fonts.css';
 @import './game.css';
 @import './menu.css';
-@import './game_over.css';
+@import './endscreen.css';
 @import './pixel/pixel-corners-endscreen-buttons.css';
 @import './pixel/pixel-corners-menu-buttons.css';
+@import './pixel/pixel-corners-credits-person-img.css';
+@import './pixel/pixel-corners-credits-buttons.css';
 
 * {
     font-family: Pixellari;
@@ -23,9 +25,18 @@ button {
     cursor: pointer;
 }
 
+h1{
+    margin: 0;
+}
+
 main {
     width: 100vw;
     height: 100vh;
+}
+
+a {
+    color: white;
+    text-decoration: none;
 }
 
 #menu, #game-container, #endscreen {
@@ -39,6 +50,11 @@ main {
 
 #menu {
     visibility: visible;
+}
+
+.center {
+    display: flex;
+    align-items: flex-start;
 }
 
 

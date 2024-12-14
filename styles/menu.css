@@ -5,21 +5,7 @@
 
     display: flex;
     justify-content: center;
-}
-
-#menu > section {
-    flex: 1;
-
-    display: flex;
-    align-items: center;
-}
-
-#menu > section[no='1']{
-    justify-content: flex-end;
-}
-
-#menu > section[no='2']{
-    justify-content: flex-start;
+    transition: background-position 1s ease-in-out;
 }
 
 #menu img#hero-icon {
@@ -56,4 +42,105 @@
     color: black;
     mix-blend-mode: screen;
     transform: translate(-2px, -2px);
+}
+
+#menu > section {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+}
+
+#menu .menu-visible-section {
+    flex: 1;
+    width: 100%;
+    opacity: 1;
+}
+
+#menu .menu-hidden-section {
+    flex: 0;
+    width: 0%;
+    opacity: 0;
+    z-index: -100;
+}
+
+#menu > section[no='1']{
+    justify-content: flex-end;
+}
+
+#menu > section[no='2'] {
+    flex-direction: column;
+    justify-content: center;
+    margin-top: -64px;   
+    gap: 64px;
+}
+
+#menu > section[no='3']{
+    justify-content: flex-start;
+}
+
+#menu > section[no='2'] article.credits-person {
+    width: 550px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+
+    color: white;
+    font-size: 40px;
+}
+
+#menu > section[no='2'] article.credits-person h1 {
+    font-weight: 500;
+}
+
+#menu > section[no='2'] article.credits-person ul {
+    margin: 0 auto;
+    width: fit-content;
+    list-style-type: square;
+}
+
+#menu > section[no='2'] article.credits-person li {
+    width: fit-content;
+    margin-bottom: 20px;
+}
+
+#menu > section[no='2'] article.credits-person li::marker{
+    font-size: 1.2em;
+    line-height: 0.1;
+ }
+
+
+#menu article.credits-person img {
+    width: 200px;
+    margin-bottom: 32px;
+}
+
+#menu article.credits-person .credits-person-img--wrapper:hover {
+    transform: scale(105%);
+}
+
+#menu section[no='2'] button {
+    width: 300px;
+    height: 75px;
+    padding: 0;
+
+    background-color: transparent;
+    color: white;
+    font-size: 36px;
+
+    transition: background-color 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out;
+}
+
+#menu section[no='2'] button:hover {
+    background-color: white;
+    color: black;
+    mix-blend-mode: screen;
+    transform: translate(-1px, -1px);
 }

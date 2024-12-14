@@ -16,7 +16,7 @@ canvas#game-canvas {
     gap: 8px;
 }
 
-img#points-counter-gato {
+#points-counter > img {
     height: 80px;
 }
 

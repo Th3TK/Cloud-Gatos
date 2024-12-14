@@ -1,6 +1,7 @@
 import Game from "./classes/game/Game";
 import KeyboardHandler from "./classes/game/KeyboardHandler.js";
 import MovementHandler from "./classes/game/MovementHandler.js";
+import Page from "./classes/layout/Page.js";
 import { getSeed } from "./utils/seeds.js";
 import Cookies from 'js-cookie';
 
@@ -11,11 +12,14 @@ const gameCanvas = document.querySelector('#game-canvas')! as HTMLCanvasElement;
 const gameContainer = document.querySelector('#game-container')! as HTMLElement;
 const menuContainer = document.querySelector('#menu')! as HTMLElement;
 const endscreenContainer = document.querySelector('#endscreen')! as HTMLElement;
-const startButton = document.querySelector('#play-button')! as HTMLButtonElement;
-const restartButton = document.querySelector('#play-again')! as HTMLButtonElement;
-const returnToMenuButton = document.querySelector('#return-to-menu')! as HTMLButtonElement;
 const finalScoreOutput = document.querySelector('#endscreen-score-out')! as HTMLElement;
 const highScoreOutput = document.querySelector('#endscreen-highscore-out')! as HTMLElement;
+
+const endscreenPage = new Page(endscreenContainer);
+const gamePage = new Page(gameContainer);
+const menuPage = new Page(menuContainer, 'menu-visible-section', 'menu-hidden-section');
+menuPage.registerSectionConfigs('main', [1, 3]);
+menuPage.registerSectionConfigs('credits', [2]);
 
 let game: Game | null = null;
 
@@ -28,7 +32,7 @@ const startGame = () => {
     
     keyboardHandler.registerKeysDown(['w', 'a', 's', 'd'], movementHandler.keyPress);
     keyboardHandler.registerKeysUp(['w', 'a', 's', 'd'], movementHandler.keyRelease);
-    keyboardHandler.registerKeyDown('r', game.playerRelease);
+    keyboardHandler.registerKeyDown(' ', game.playerRelease);
     keyboardHandler.registerKeyDown('l', game.stop);
     // keyboardHandler.registerKeyDown('i', game.addPoint)
 
@@ -36,7 +40,7 @@ const startGame = () => {
         movementHandler.stop();
         keyboardHandler.stop();
     
-        movePages(gameContainer, endscreenContainer);
+        movePages(gamePage, endscreenPage);
         
         const highScore = updateAndGetHighScore(points);
         finalScoreOutput.innerText = `${points}`;
@@ -48,27 +52,34 @@ const startGame = () => {
     game.start();
 }
 
-startButton.addEventListener('click', () => {
+menuPage.registerButton('play-button', () => {
     startGame();
-    movePages(menuContainer, gameContainer);
+    movePages(menuPage, gamePage);
 })
 
-restartButton.addEventListener('click', () => {
+menuPage.registerButton('credits-button', () => {
+    menuPage.display('credits');
+    menuPage.getElement().style.backgroundPosition = 'center';
+})
+
+menuPage.registerButton('return-from-credits', () => {
+    menuPage.display('main');
+    menuPage.getElement().style.backgroundPosition = 'bottom';
+})
+
+endscreenPage.registerButton('play-again', () => {
     startGame();
-    movePages(endscreenContainer, gameContainer);
+    movePages(endscreenPage, gamePage);
 })
 
-returnToMenuButton.addEventListener('click', () => {
-    movePages(endscreenContainer, menuContainer);
+endscreenPage.registerButton('return-to-menu', () => {
+    movePages(endscreenPage, menuPage);
 })
 
 
-function movePages(from: HTMLElement, to: HTMLElement) {
-    to.style.animation = 'wipe 1s ease-in-out forwards';
-    from.style.animation = 'wipeReverse 1s ease-in-out forwards';
-
-    to.classList.add('current');
-    from.classList.remove('current');  
+function movePages(from: Page, to: Page) {
+    from.hidePage();
+    to.showPage();
 }
 
 function updateAndGetHighScore(points: number) {
