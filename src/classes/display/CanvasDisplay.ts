@@ -148,7 +148,7 @@ export default class CanvasDisplay {
 
     private updateEnemies(enemies: EnemiesHolder, offset: Coordinates) {
         enemies.getEnemies().forEach((enemy: Enemy) => {
-            this.drawEntity(enemy, offset)
+            if(!enemy.isHidden()) this.drawEntity(enemy, offset)
         });
     }
     
